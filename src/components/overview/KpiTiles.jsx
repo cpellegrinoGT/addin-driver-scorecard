@@ -59,7 +59,7 @@ export default function KpiTiles({
       {showSafety && fleetCrashProbability != null && (
         <div className="scorecard-kpi">
           <div className="scorecard-kpi-value">
-            {fleetCrashProbability.toFixed(4)}
+            {Math.round(fleetCrashProbability).toLocaleString()}
             <span className="scorecard-info-wrap">
               <span className="scorecard-info-icon">i</span>
               <span className="scorecard-info-tooltip">

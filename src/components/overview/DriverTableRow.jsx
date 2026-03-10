@@ -75,7 +75,7 @@ export default function DriverTableRow({
           </td>
           <td style={{ textAlign: "right" }}>
             {scSummary?.crashProbabilityKm != null
-              ? scSummary.crashProbabilityKm.toFixed(4)
+              ? Math.round(scSummary.crashProbabilityKm).toLocaleString()
               : "-"}
           </td>
         </>

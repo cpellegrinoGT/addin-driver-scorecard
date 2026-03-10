@@ -67,8 +67,7 @@ export default function SafetyTrendChart({ trendData }) {
         },
         scales: {
           y: {
-            min: 0,
-            max: 100,
+            beginAtZero: true,
             ticks: { font: { size: 11 } },
             grid: { color: "#f0f0f0" },
           },

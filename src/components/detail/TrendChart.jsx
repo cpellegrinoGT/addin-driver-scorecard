@@ -89,8 +89,7 @@ export default function TrendChart({ buckets, thresholds, safetyTrend }) {
     if (hasSafety) {
       scales.y2 = {
         position: "right",
-        min: 0,
-        max: 100,
+        beginAtZero: true,
         ticks: {
           font: { size: 11 },
           color: "#17a2b8",

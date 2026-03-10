@@ -52,7 +52,7 @@ export function buildScorecardCsvRows(
   if (scActive) {
     headers.push(
       "Safety Rank",
-      "Crash Prob (km)",
+      "Crash Prob",
       "Collisions",
       "Accel Rank",
       "Braking Rank",
@@ -86,9 +86,9 @@ export function buildScorecardCsvRows(
       const sc = safetyCenterData.summaryByEntity.get(row.driverId);
       obj["Safety Rank"] =
         sc?.overallSafetyRank != null ? sc.overallSafetyRank.toFixed(0) : "";
-      obj["Crash Prob (km)"] =
+      obj["Crash Prob"] =
         sc?.crashProbabilityKm != null
-          ? sc.crashProbabilityKm.toFixed(4)
+          ? Math.round(sc.crashProbabilityKm)
           : "";
       obj["Collisions"] = sc?.collisionCount ?? "";
       obj["Accel Rank"] =
@@ -158,8 +158,8 @@ export function buildDriverDetailCsvRows(driverRow, ruleMap, isMetric, scSummary
       "Weight (%)": "",
     });
     rows.push({
-      Rule: "Crash Prob (km)",
-      Score: scSummary.crashProbabilityKm != null ? scSummary.crashProbabilityKm.toFixed(4) : "",
+      Rule: "Crash Prob",
+      Score: scSummary.crashProbabilityKm != null ? Math.round(scSummary.crashProbabilityKm) : "",
       Events: "",
       "Weight (%)": "",
     });

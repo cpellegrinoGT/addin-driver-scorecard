@@ -38,7 +38,7 @@ export default function SafetyRankPanel({ summary, isMetric }) {
       <div className="sc-crash-grid">
         <div className="sc-crash-cell">
           <div className="sc-crash-value">
-            {crashProb != null ? crashProb.toFixed(4) : "-"}
+            {crashProb != null ? Math.round(crashProb).toLocaleString() : "-"}
           </div>
           <div className="sc-crash-label">
             Crash Probability ({unit})
