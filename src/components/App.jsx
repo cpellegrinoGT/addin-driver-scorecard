@@ -118,8 +118,8 @@ const App = forwardRef(function App(props, ref) {
       const isMetric = currentUserArr?.[0]?.isMetric ?? false;
 
       const now = new Date();
-      const thirtyAgo = new Date(now);
-      thirtyAgo.setDate(thirtyAgo.getDate() - 30);
+      const sevenAgo = new Date(now);
+      sevenAgo.setDate(sevenAgo.getDate() - 7);
 
       dispatch({
         type: "SET_FOUNDATION",
@@ -133,7 +133,7 @@ const App = forwardRef(function App(props, ref) {
           isMetric,
           _api: api,
           _pageState: pageState,
-          fromDate: thirtyAgo.toISOString().slice(0, 10),
+          fromDate: sevenAgo.toISOString().slice(0, 10),
           toDate: now.toISOString().slice(0, 10),
         },
       });

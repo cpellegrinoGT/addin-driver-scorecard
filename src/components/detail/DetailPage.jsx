@@ -2,6 +2,7 @@ import DetailHeader from "./DetailHeader.jsx";
 import ScoreGauge from "./ScoreGauge.jsx";
 import RuleBreakdownChart from "./RuleBreakdownChart.jsx";
 import TrendChart from "./TrendChart.jsx";
+import RuleBreakdownTable from "./RuleBreakdownTable.jsx";
 import { buildTrendBuckets } from "../../lib/scoring.js";
 import { getKeyFn } from "../../lib/dateUtils.js";
 import { exportCsv, buildDriverDetailCsvRows } from "../../lib/exportCsv.js";
@@ -70,6 +71,18 @@ export default function DetailPage({
     exportCsv(`${safeName}_scorecard.csv`, headers, rows);
   }
 
+  function handleRuleClick(ruleId) {
+    const fromISO = new Date(fromDate).toISOString();
+    // End of the "to" day
+    const toEnd = new Date(toDate + "T23:59:59.000Z").toISOString();
+    const hash = `#exceptionsInsights,dateRangeFilter:(from:'${fromISO}',label:Custom,to:'${toEnd}'),exceptionRulesFilter:!(${ruleId})`;
+    try {
+      window.top.location.hash = hash;
+    } catch {
+      window.location.hash = hash;
+    }
+  }
+
   return (
     <div>
       <DetailHeader
@@ -110,6 +123,13 @@ export default function DetailPage({
               ruleScores={driverRow.ruleScores}
               eventCounts={driverRow.eventCounts}
               ruleColumns={ruleColumns}
+            />
+            <RuleBreakdownTable
+              ruleScores={driverRow.ruleScores}
+              eventCounts={driverRow.eventCounts}
+              ruleColumns={ruleColumns}
+              ruleWeights={settings.ruleWeights}
+              onRuleClick={handleRuleClick}
             />
           </div>
 
