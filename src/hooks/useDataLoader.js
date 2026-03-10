@@ -11,6 +11,12 @@ import {
   buildDriverRows,
   buildRiskDistribution,
 } from "../lib/scoring.js";
+import {
+  probeSafetyCenter,
+  fetchSafetyDriverInsights,
+  fetchSafetyVehicleInsights,
+  aggregateSafetyInsights,
+} from "../lib/safetyCenter.js";
 import { CHUNK_DAYS, MULTI_CALL_BATCH, RESULTS_LIMIT } from "../lib/constants.js";
 
 export function useDataLoader() {
@@ -49,7 +55,7 @@ export function useDataLoader() {
       const fromISO = new Date(fromDate).toISOString();
       const toISO = new Date(toDate + "T23:59:59").toISOString();
 
-      // Step 1: Fetch DriverChanges or build device intervals (10%)
+      // Step 1: Fetch DriverChanges or build device intervals (0-9%)
       let filteredIntervals;
       let filteredDriverIds;
 
@@ -101,10 +107,10 @@ export function useDataLoader() {
         ];
       }
 
-      onProgress("Fetching driver assignments…", 10);
+      onProgress("Fetching driver assignments…", 9);
 
-      // Step 2: Fetch Trips (10-40%)
-      onProgress("Fetching trips…", 12);
+      // Step 2: Fetch Trips (10-36%)
+      onProgress("Fetching trips…", 10);
       checkAbort();
 
       const chunks = chunkDateRange(fromISO, toISO, CHUNK_DAYS);
@@ -120,7 +126,7 @@ export function useDataLoader() {
         });
         allTrips.push(...(trips || []));
 
-        const pct = 12 + ((i + 1) / chunks.length) * 28;
+        const pct = 10 + ((i + 1) / chunks.length) * 26;
         onProgress(
           `Fetching trips… (${i + 1}/${chunks.length})`,
           Math.round(pct)
@@ -135,8 +141,8 @@ export function useDataLoader() {
       const driverTrips = assignTripsToDrivers(allTrips, filteredIntervals);
       const driverDistanceMap = buildDriverDistanceMap(driverTrips);
 
-      // Step 3: Fetch ExceptionEvents per rule (40-90%)
-      onProgress("Fetching exception events…", 42);
+      // Step 3: Fetch ExceptionEvents per rule (38-82%)
+      onProgress("Fetching exception events…", 38);
       checkAbort();
 
       const allEvents = [];
@@ -167,7 +173,7 @@ export function useDataLoader() {
           allEvents.push(...(events || []));
 
           completedRuleChunks++;
-          const pct = 42 + (completedRuleChunks / totalRuleChunks) * 48;
+          const pct = 38 + (completedRuleChunks / totalRuleChunks) * 44;
           onProgress(
             `Fetching events… (${completedRuleChunks}/${totalRuleChunks})`,
             Math.round(pct)
@@ -180,8 +186,8 @@ export function useDataLoader() {
       }
       checkAbort();
 
-      // Step 4: Build scorecard (90-100%)
-      onProgress("Computing scores…", 92);
+      // Step 4: Build scorecard (84-90%)
+      onProgress("Computing scores…", 84);
 
       const driverEventMap = assignEventsToDrivers(
         allEvents,
@@ -210,12 +216,49 @@ export function useDataLoader() {
 
       const riskDistribution = buildRiskDistribution(driverRows);
 
+      onProgress("Computing scores…", 90);
+
+      // Step 5: Safety Center data (90-100%)
+      let safetyCenterData = null;
+      let safetyCenterAvailable = false;
+
+      try {
+        onProgress("Checking Safety Center…", 92);
+        checkAbort();
+        const scAvailable = await probeSafetyCenter(api);
+        safetyCenterAvailable = scAvailable;
+
+        if (scAvailable) {
+          onProgress("Fetching Safety Center data…", 95);
+          checkAbort();
+
+          const scRecords =
+            entityMode === "assets"
+              ? await fetchSafetyVehicleInsights(api, fromISO, toISO)
+              : await fetchSafetyDriverInsights(api, fromISO, toISO);
+
+          checkAbort();
+          const { summaryByEntity, trendByEntity } = aggregateSafetyInsights(
+            scRecords,
+            entityMode
+          );
+
+          safetyCenterData = { summaryByEntity, trendByEntity };
+        }
+      } catch (err) {
+        if (err.name === "AbortError") throw err;
+        console.warn("Safety Center fetch failed (non-blocking):", err);
+        safetyCenterData = null;
+      }
+
       onProgress("Done", 100);
 
       return {
         driverRows,
         riskDistribution,
         dateRange: { from: fromDate, to: toDate },
+        safetyCenterData,
+        safetyCenterAvailable,
         rawData: {
           driverTrips,
           driverEventMap,

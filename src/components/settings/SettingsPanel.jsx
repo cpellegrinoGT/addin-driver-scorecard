@@ -17,6 +17,7 @@ export default function SettingsPanel({
   settings,
   onUpdate,
   allRules,
+  safetyCenterAvailable,
   onClose,
 }) {
   const [activeTab, setActiveTab] = useState("general");
@@ -51,7 +52,11 @@ export default function SettingsPanel({
 
         <div className="scorecard-settings-body">
           {activeTab === "general" && (
-            <GeneralTab settings={settings} onUpdate={onUpdate} />
+            <GeneralTab
+              settings={settings}
+              onUpdate={onUpdate}
+              safetyCenterAvailable={safetyCenterAvailable}
+            />
           )}
           {activeTab === "rules" && (
             <RulesTab

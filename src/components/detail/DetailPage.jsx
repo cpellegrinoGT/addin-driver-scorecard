@@ -3,6 +3,8 @@ import ScoreGauge from "./ScoreGauge.jsx";
 import RuleBreakdownChart from "./RuleBreakdownChart.jsx";
 import TrendChart from "./TrendChart.jsx";
 import RuleBreakdownTable from "./RuleBreakdownTable.jsx";
+import SafetyRankPanel from "./SafetyRankPanel.jsx";
+import SafetyTrendChart from "./SafetyTrendChart.jsx";
 import { buildTrendBuckets } from "../../lib/scoring.js";
 import { getKeyFn } from "../../lib/dateUtils.js";
 import { exportCsv, buildDriverDetailCsvRows } from "../../lib/exportCsv.js";
@@ -22,6 +24,8 @@ export default function DetailPage({
   fromDate,
   toDate,
   entityLabel,
+  safetyCenterData,
+  showSafety,
 }) {
   const driverRow = data.driverRows.find((r) => r.driverId === driverId);
   if (!driverRow) {
@@ -62,11 +66,21 @@ export default function DetailPage({
     });
   }, [driverId, rawData, settings, trendGranularity]);
 
+  const scSummary =
+    showSafety && safetyCenterData?.summaryByEntity
+      ? safetyCenterData.summaryByEntity.get(driverId) || null
+      : null;
+  const scTrend =
+    showSafety && safetyCenterData?.trendByEntity
+      ? safetyCenterData.trendByEntity.get(driverId) || null
+      : null;
+
   function handleExportCsv() {
     const { headers, rows } = buildDriverDetailCsvRows(
       driverRow,
       ruleMap,
-      isMetric
+      isMetric,
+      scSummary
     );
     const safeName = driverRow.driverName.replace(/[^a-zA-Z0-9]/g, "_");
     exportCsv(`${safeName}_scorecard.csv`, headers, rows);
@@ -93,6 +107,8 @@ export default function DetailPage({
         isMetric={isMetric}
         onBack={onBack}
         entityLabel={entityLabel}
+        scSummary={scSummary}
+        showSafety={showSafety}
       />
 
       <div className="scorecard-export-row">
@@ -157,6 +173,13 @@ export default function DetailPage({
           </div>
         </div>
       </div>
+
+      {showSafety && safetyCenterData && (
+        <>
+          <SafetyRankPanel summary={scSummary} isMetric={isMetric} />
+          <SafetyTrendChart trendData={scTrend} />
+        </>
+      )}
     </div>
   );
 }

@@ -1116,3 +1116,79 @@ html, body {
 #scorecard-root .scorecard-entity-btn:hover:not(.active) {
   background: #e8eef5;
 }
+
+/* ===== Safety Center Panel ===== */
+#scorecard-root .sc-crash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+#scorecard-root .sc-crash-cell {
+  text-align: center;
+  padding: 12px 8px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+#scorecard-root .sc-crash-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+}
+
+#scorecard-root .sc-crash-value.sc-crash-benchmark {
+  color: #888;
+}
+
+#scorecard-root .sc-crash-value.sc-crash-best {
+  color: #28a745;
+}
+
+#scorecard-root .sc-crash-label {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 4px;
+}
+
+#scorecard-root .sc-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+#scorecard-root .sc-rank-label {
+  width: 140px;
+  font-size: 13px;
+  color: #555;
+  flex-shrink: 0;
+}
+
+#scorecard-root .sc-rank-bar {
+  flex: 1;
+  height: 10px;
+  background: #e9ecef;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+#scorecard-root .sc-rank-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+#scorecard-root .sc-rank-value {
+  width: 32px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  flex-shrink: 0;
+}

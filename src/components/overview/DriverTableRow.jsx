@@ -5,6 +5,8 @@ export default function DriverTableRow({
   ruleColumns,
   isMetric,
   onDriverClick,
+  scSummary,
+  scActive,
 }) {
   const distance = isMetric
     ? row.distanceKm
@@ -64,6 +66,20 @@ export default function DriverTableRow({
           </td>
         );
       })}
+      {scActive && (
+        <>
+          <td style={{ textAlign: "right" }}>
+            {scSummary?.overallSafetyRank != null
+              ? scSummary.overallSafetyRank.toFixed(0)
+              : "-"}
+          </td>
+          <td style={{ textAlign: "right" }}>
+            {scSummary?.crashProbabilityKm != null
+              ? (scSummary.crashProbabilityKm * 100000).toFixed(2)
+              : "-"}
+          </td>
+        </>
+      )}
     </tr>
   );
 }

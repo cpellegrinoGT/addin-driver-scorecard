@@ -30,7 +30,9 @@ export function buildScorecardCsvRows(
   selectedRuleIds,
   ruleMap,
   isMetric,
-  entityLabel
+  entityLabel,
+  safetyCenterData,
+  showSafety
 ) {
   const entityCol = entityLabel === "Asset" ? "Asset" : "Driver";
   const headers = [
@@ -44,6 +46,21 @@ export function buildScorecardCsvRows(
     const name = ruleMap[ruleId]?.name || ruleId;
     headers.push(`${name} Score`);
     headers.push(`${name} Events`);
+  }
+
+  const scActive = showSafety && safetyCenterData?.summaryByEntity;
+  if (scActive) {
+    headers.push(
+      "Safety Rank",
+      "Crash Prob (100K km)",
+      "Crash Prob Benchmark",
+      "Collisions",
+      "Accel Rank",
+      "Braking Rank",
+      "Cornering Rank",
+      "Speeding Rank",
+      "Seatbelt Rank"
+    );
   }
 
   const rows = driverRows.map((row) => {
@@ -66,13 +83,39 @@ export function buildScorecardCsvRows(
       obj[`${name} Events`] = row.eventCounts[ruleId] || 0;
     }
 
+    if (scActive) {
+      const sc = safetyCenterData.summaryByEntity.get(row.driverId);
+      obj["Safety Rank"] =
+        sc?.overallSafetyRank != null ? sc.overallSafetyRank.toFixed(0) : "";
+      obj["Crash Prob (100K km)"] =
+        sc?.crashProbabilityKm != null
+          ? (sc.crashProbabilityKm * 100000).toFixed(2)
+          : "";
+      obj["Crash Prob Benchmark"] = "3.00";
+      obj["Collisions"] = sc?.collisionCount ?? "";
+      obj["Accel Rank"] =
+        sc?.harshAccelerationRank != null
+          ? sc.harshAccelerationRank.toFixed(0)
+          : "";
+      obj["Braking Rank"] =
+        sc?.harshBrakingRank != null ? sc.harshBrakingRank.toFixed(0) : "";
+      obj["Cornering Rank"] =
+        sc?.harshCorneringRank != null
+          ? sc.harshCorneringRank.toFixed(0)
+          : "";
+      obj["Speeding Rank"] =
+        sc?.speedingRank != null ? sc.speedingRank.toFixed(0) : "";
+      obj["Seatbelt Rank"] =
+        sc?.seatbeltRank != null ? sc.seatbeltRank.toFixed(0) : "";
+    }
+
     return obj;
   });
 
   return { headers, rows };
 }
 
-export function buildDriverDetailCsvRows(driverRow, ruleMap, isMetric) {
+export function buildDriverDetailCsvRows(driverRow, ruleMap, isMetric, scSummary) {
   const headers = ["Rule", "Score", "Events", "Weight (%)"];
   const rows = Object.keys(driverRow.ruleScores).map((ruleId) => {
     const score = driverRow.ruleScores[ruleId];
@@ -101,6 +144,64 @@ export function buildDriverDetailCsvRows(driverRow, ruleMap, isMetric) {
     Events: "",
     "Weight (%)": "",
   });
+
+  if (scSummary) {
+    rows.push({ Rule: "", Score: "", Events: "", "Weight (%)": "" });
+    rows.push({
+      Rule: "SAFETY CENTER",
+      Score: "",
+      Events: "",
+      "Weight (%)": "",
+    });
+    rows.push({
+      Rule: "Safety Rank",
+      Score: scSummary.overallSafetyRank != null ? scSummary.overallSafetyRank.toFixed(0) : "",
+      Events: "",
+      "Weight (%)": "",
+    });
+    rows.push({
+      Rule: "Crash Prob (per 100K km)",
+      Score: scSummary.crashProbabilityKm != null ? (scSummary.crashProbabilityKm * 100000).toFixed(2) : "",
+      Events: "",
+      "Weight (%)": "",
+    });
+    rows.push({
+      Rule: "Collisions",
+      Score: scSummary.collisionCount ?? 0,
+      Events: "",
+      "Weight (%)": "",
+    });
+    rows.push({
+      Rule: "Accel Rank",
+      Score: scSummary.harshAccelerationRank != null ? scSummary.harshAccelerationRank.toFixed(0) : "",
+      Events: "",
+      "Weight (%)": "",
+    });
+    rows.push({
+      Rule: "Braking Rank",
+      Score: scSummary.harshBrakingRank != null ? scSummary.harshBrakingRank.toFixed(0) : "",
+      Events: "",
+      "Weight (%)": "",
+    });
+    rows.push({
+      Rule: "Cornering Rank",
+      Score: scSummary.harshCorneringRank != null ? scSummary.harshCorneringRank.toFixed(0) : "",
+      Events: "",
+      "Weight (%)": "",
+    });
+    rows.push({
+      Rule: "Speeding Rank",
+      Score: scSummary.speedingRank != null ? scSummary.speedingRank.toFixed(0) : "",
+      Events: "",
+      "Weight (%)": "",
+    });
+    rows.push({
+      Rule: "Seatbelt Rank",
+      Score: scSummary.seatbeltRank != null ? scSummary.seatbeltRank.toFixed(0) : "",
+      Events: "",
+      "Weight (%)": "",
+    });
+  }
 
   return { headers, rows };
 }

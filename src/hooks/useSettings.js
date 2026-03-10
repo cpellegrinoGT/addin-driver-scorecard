@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS = {
   thresholds: { ...DEFAULT_THRESHOLDS },
   savedViews: [],
   entityMode: "drivers", // "drivers" | "assets"
+  showSafety: true,
 };
 
 function loadFromStorage(key, fallback) {
@@ -43,6 +44,7 @@ export function useSettings() {
         thresholds: stored.thresholds || { ...DEFAULT_THRESHOLDS },
         savedViews: loadFromStorage(VIEWS_STORAGE_KEY, []),
         entityMode: stored.entityMode || "drivers",
+        showSafety: stored.showSafety !== undefined ? stored.showSafety : true,
       };
     }
     return { ...DEFAULT_SETTINGS };

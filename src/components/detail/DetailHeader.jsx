@@ -8,6 +8,8 @@ export default function DetailHeader({
   isMetric,
   onBack,
   entityLabel,
+  scSummary,
+  showSafety,
 }) {
   const distance = isMetric
     ? driverRow.distanceKm
@@ -39,6 +41,11 @@ export default function DetailHeader({
         >
           {RISK_LABELS[driverRow.risk]}
         </span>
+        {showSafety && scSummary?.crashProbabilityKm != null && (
+          <div style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
+            Crash Prob: {(scSummary.crashProbabilityKm * 100000).toFixed(2)} / 100K {isMetric ? "km" : "mi"}
+          </div>
+        )}
       </div>
     </div>
   );

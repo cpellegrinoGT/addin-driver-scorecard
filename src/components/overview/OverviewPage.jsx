@@ -23,6 +23,8 @@ export default function OverviewPage({
   trendGranularity,
   onGranularityChange,
   entityLabel,
+  safetyCenterData,
+  showSafety,
 }) {
   const { driverRows, riskDistribution, dateRange } = data;
 
@@ -33,6 +35,19 @@ export default function OverviewPage({
       : null;
   const totalDistance = driverRows.reduce((s, r) => s + r.distanceKm, 0);
   const highRiskCount = riskDistribution.high || 0;
+
+  // Compute fleet crash probability from Safety Center data
+  let fleetCrashProbability = null;
+  if (showSafety && safetyCenterData?.summaryByEntity) {
+    const entries = [...safetyCenterData.summaryByEntity.values()].filter(
+      (s) => s.isEnrolled && s.crashProbabilityKm != null
+    );
+    if (entries.length > 0) {
+      fleetCrashProbability =
+        entries.reduce((sum, s) => sum + s.crashProbabilityKm, 0) /
+        entries.length;
+    }
+  }
 
   const top5 = getTopPerformers(driverRows, 5);
   const bottom5 = getBottomPerformers(driverRows, 5);
@@ -60,6 +75,8 @@ export default function OverviewPage({
         totalDistance={totalDistance}
         isMetric={isMetric}
         entityLabel={entityLabel}
+        showSafety={showSafety}
+        fleetCrashProbability={fleetCrashProbability}
       />
 
       <div className="scorecard-charts-row">
@@ -111,6 +128,8 @@ export default function OverviewPage({
         isMetric={isMetric}
         onDriverClick={onDriverClick}
         entityLabel={entityLabel}
+        safetyCenterData={safetyCenterData}
+        showSafety={showSafety}
       />
     </div>
   );

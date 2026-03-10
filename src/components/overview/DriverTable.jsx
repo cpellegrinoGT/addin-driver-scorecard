@@ -10,6 +10,8 @@ export default function DriverTable({
   isMetric,
   onDriverClick,
   entityLabel,
+  safetyCenterData,
+  showSafety,
 }) {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState("totalScore");
@@ -22,6 +24,12 @@ export default function DriverTable({
       name: ruleMap[id]?.name || id,
       color: settings.ruleColors[id] || "#4a90d9",
     }));
+
+  const scActive = showSafety && safetyCenterData?.summaryByEntity;
+
+  function getScSummary(driverId) {
+    return scActive ? safetyCenterData.summaryByEntity.get(driverId) : null;
+  }
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -44,6 +52,12 @@ export default function DriverTable({
       } else if (sortKey === "totalScore") {
         av = a.totalScore ?? -1;
         bv = b.totalScore ?? -1;
+      } else if (sortKey === "sc_rank") {
+        av = getScSummary(a.driverId)?.overallSafetyRank ?? -1;
+        bv = getScSummary(b.driverId)?.overallSafetyRank ?? -1;
+      } else if (sortKey === "sc_crash") {
+        av = getScSummary(a.driverId)?.crashProbabilityKm ?? -1;
+        bv = getScSummary(b.driverId)?.crashProbabilityKm ?? -1;
       } else if (sortKey.startsWith("rule_")) {
         const ruleId = sortKey.slice(5);
         av = a.ruleScores[ruleId] ?? -1;
@@ -84,7 +98,9 @@ export default function DriverTable({
       settings.selectedRuleIds,
       ruleMap,
       isMetric,
-      entityLabel
+      entityLabel,
+      scActive ? safetyCenterData : null,
+      showSafety
     );
     const filename = entityLabel === "Asset" ? "asset_scorecard.csv" : "driver_scorecard.csv";
     exportCsv(filename, headers, rows);
@@ -158,6 +174,22 @@ export default function DriverTable({
                   </span>
                 </th>
               ))}
+              {scActive && (
+                <>
+                  <th onClick={() => handleSort("sc_rank")}>
+                    Safety Rank
+                    <span className="scorecard-sort-indicator">
+                      {indicator("sc_rank")}
+                    </span>
+                  </th>
+                  <th onClick={() => handleSort("sc_crash")}>
+                    Crash Prob.
+                    <span className="scorecard-sort-indicator">
+                      {indicator("sc_crash")}
+                    </span>
+                  </th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -168,6 +200,8 @@ export default function DriverTable({
                 ruleColumns={ruleColumns}
                 isMetric={isMetric}
                 onDriverClick={onDriverClick}
+                scSummary={getScSummary(row.driverId)}
+                scActive={!!scActive}
               />
             ))}
           </tbody>

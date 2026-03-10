@@ -7,6 +7,8 @@ export default function KpiTiles({
   totalDistance,
   isMetric,
   entityLabel,
+  showSafety,
+  fleetCrashProbability,
 }) {
   const distLabel = isMetric ? "km" : "mi";
   const distValue = isMetric ? totalDistance : totalDistance * 0.621371;
@@ -54,6 +56,26 @@ export default function KpiTiles({
         </div>
         <div className="scorecard-kpi-label">Fleet Distance ({distLabel})</div>
       </div>
+      {showSafety && fleetCrashProbability != null && (
+        <div className="scorecard-kpi">
+          <div className="scorecard-kpi-value">
+            {(fleetCrashProbability * 100000).toFixed(2)}
+            <span className="scorecard-info-wrap">
+              <span className="scorecard-info-icon">i</span>
+              <span className="scorecard-info-tooltip">
+                <strong>Predictive Collision Risk</strong>
+                <br /><br />
+                Average crash probability per 100K {isMetric ? "km" : "mi"} across
+                enrolled {entityLabel === "Asset" ? "assets" : "drivers"}, sourced
+                from Geotab Safety Center. Data has a 2-3 day lag.
+              </span>
+            </span>
+          </div>
+          <div className="scorecard-kpi-label">
+            Fleet Crash Prob. (per 100K {isMetric ? "km" : "mi"})
+          </div>
+        </div>
+      )}
     </div>
   );
 }

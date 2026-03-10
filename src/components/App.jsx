@@ -47,6 +47,7 @@ const initialState = {
   error: null,
 
   scorecardData: null,
+  safetyCenterAvailable: false,
 };
 
 function reducer(state, action) {
@@ -80,7 +81,12 @@ function reducer(state, action) {
     case "SET_PROGRESS":
       return { ...state, loadingText: action.text, progress: action.progress };
     case "SET_SCORECARD_DATA":
-      return { ...state, scorecardData: action.data, loading: false };
+      return {
+        ...state,
+        scorecardData: action.data,
+        safetyCenterAvailable: action.data?.safetyCenterAvailable ?? false,
+        loading: false,
+      };
     case "SET_ERROR":
       return { ...state, error: action.error, loading: false };
     default:
@@ -307,6 +313,8 @@ const App = forwardRef(function App(props, ref) {
                   rawData={rawDataRef.current}
                   trendGranularity={state.trendGranularity}
                   entityLabel={entityLabel}
+                  safetyCenterData={state.scorecardData?.safetyCenterData}
+                  showSafety={settings.showSafety}
                   onGranularityChange={(g) =>
                     dispatch({
                       type: "SET_TREND_GRANULARITY",
@@ -333,6 +341,8 @@ const App = forwardRef(function App(props, ref) {
                   isMetric={state.isMetric}
                   trendGranularity={state.trendGranularity}
                   entityLabel={entityLabel}
+                  safetyCenterData={state.scorecardData?.safetyCenterData}
+                  showSafety={settings.showSafety}
                   onGranularityChange={(g) =>
                     dispatch({
                       type: "SET_TREND_GRANULARITY",
@@ -366,6 +376,7 @@ const App = forwardRef(function App(props, ref) {
             settings={settings}
             onUpdate={updateSettings}
             allRules={state.allRules}
+            safetyCenterAvailable={state.safetyCenterAvailable}
             onClose={() =>
               dispatch({ type: "SET_SETTINGS_OPEN", open: false })
             }
