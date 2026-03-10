@@ -1,9 +1,18 @@
+/* ===== Reset Zenith dark-theme overrides ===== */
+html, body {
+  background: #fff !important;
+  color: #333 !important;
+  margin: 0;
+  padding: 0;
+}
+
 /* ===== Layout ===== */
 #scorecard-root {
-  font-family: "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 14px;
   color: #333;
   line-height: 1.5;
+  background: #fff;
 }
 
 #scorecard-container {
