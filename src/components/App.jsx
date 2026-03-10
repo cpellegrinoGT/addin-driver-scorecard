@@ -192,6 +192,7 @@ const App = forwardRef(function App(props, ref) {
         allDrivers: state.allDrivers,
         allDevices: state.allDevices,
         deviceIds,
+        entityMode: settings.entityMode,
         onProgress: (text, progress) =>
           dispatch({ type: "SET_PROGRESS", text, progress }),
       });
@@ -226,8 +227,14 @@ const App = forwardRef(function App(props, ref) {
     [initializeFoundation, abort]
   );
 
+  const entityLabel = settings.entityMode === "assets" ? "Asset" : "Driver";
+
   const driverMap = {};
-  for (const d of state.allDrivers) driverMap[d.id] = d;
+  if (settings.entityMode === "assets") {
+    for (const d of state.allDevices) driverMap[d.id] = d;
+  } else {
+    for (const d of state.allDrivers) driverMap[d.id] = d;
+  }
 
   return (
     <GeotabContext.Provider
@@ -275,13 +282,15 @@ const App = forwardRef(function App(props, ref) {
                     driverId: view === "overview" ? null : state.activeDriverId,
                   })
                 }
+                entityLabel={entityLabel}
                 activeDriverName={
                   state.activeDriverId
                     ? (() => {
                         const d = driverMap[state.activeDriverId];
-                        return d
-                          ? `${d.firstName || ""} ${d.lastName || ""}`.trim()
-                          : state.activeDriverId;
+                        if (!d) return state.activeDriverId;
+                        return settings.entityMode === "assets"
+                          ? d.name || d.id
+                          : `${d.firstName || ""} ${d.lastName || ""}`.trim();
                       })()
                     : null
                 }
@@ -297,6 +306,8 @@ const App = forwardRef(function App(props, ref) {
                   isMetric={state.isMetric}
                   rawData={rawDataRef.current}
                   trendGranularity={state.trendGranularity}
+                  showPcr={settings.showPcr}
+                  entityLabel={entityLabel}
                   onGranularityChange={(g) =>
                     dispatch({
                       type: "SET_TREND_GRANULARITY",
@@ -322,6 +333,8 @@ const App = forwardRef(function App(props, ref) {
                   allDrivers={state.allDrivers}
                   isMetric={state.isMetric}
                   trendGranularity={state.trendGranularity}
+                  showPcr={settings.showPcr}
+                  entityLabel={entityLabel}
                   onGranularityChange={(g) =>
                     dispatch({
                       type: "SET_TREND_GRANULARITY",

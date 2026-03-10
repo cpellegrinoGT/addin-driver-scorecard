@@ -21,6 +21,8 @@ export default function DetailPage({
   rawData,
   fromDate,
   toDate,
+  showPcr,
+  entityLabel,
 }) {
   const driverRow = data.driverRows.find((r) => r.driverId === driverId);
   if (!driverRow) {
@@ -65,7 +67,8 @@ export default function DetailPage({
     const { headers, rows } = buildDriverDetailCsvRows(
       driverRow,
       ruleMap,
-      isMetric
+      isMetric,
+      showPcr
     );
     const safeName = driverRow.driverName.replace(/[^a-zA-Z0-9]/g, "_");
     exportCsv(`${safeName}_scorecard.csv`, headers, rows);
@@ -91,6 +94,8 @@ export default function DetailPage({
         toDate={toDate}
         isMetric={isMetric}
         onBack={onBack}
+        showPcr={showPcr}
+        entityLabel={entityLabel}
       />
 
       <div className="scorecard-export-row">
@@ -151,6 +156,7 @@ export default function DetailPage({
             <TrendChart
               buckets={trendBuckets}
               thresholds={settings.thresholds}
+              showPcr={showPcr}
             />
           </div>
         </div>

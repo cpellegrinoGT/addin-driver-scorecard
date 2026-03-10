@@ -1,10 +1,12 @@
 import { useState } from "react";
+import GeneralTab from "./GeneralTab.jsx";
 import RulesTab from "./RulesTab.jsx";
 import ThresholdsTab from "./ThresholdsTab.jsx";
 import ColorsTab from "./ColorsTab.jsx";
 import SavedViewsTab from "./SavedViewsTab.jsx";
 
 const TABS = [
+  { id: "general", label: "General" },
   { id: "rules", label: "Rules" },
   { id: "thresholds", label: "Thresholds" },
   { id: "colors", label: "Colors" },
@@ -17,7 +19,7 @@ export default function SettingsPanel({
   allRules,
   onClose,
 }) {
-  const [activeTab, setActiveTab] = useState("rules");
+  const [activeTab, setActiveTab] = useState("general");
 
   return (
     <>
@@ -48,6 +50,9 @@ export default function SettingsPanel({
         </div>
 
         <div className="scorecard-settings-body">
+          {activeTab === "general" && (
+            <GeneralTab settings={settings} onUpdate={onUpdate} />
+          )}
           {activeTab === "rules" && (
             <RulesTab
               settings={settings}

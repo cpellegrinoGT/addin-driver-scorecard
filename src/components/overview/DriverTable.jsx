@@ -9,6 +9,8 @@ export default function DriverTable({
   ruleMap,
   isMetric,
   onDriverClick,
+  showPcr,
+  entityLabel,
 }) {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState("totalScore");
@@ -43,6 +45,9 @@ export default function DriverTable({
       } else if (sortKey === "totalScore") {
         av = a.totalScore ?? -1;
         bv = b.totalScore ?? -1;
+      } else if (sortKey === "pcrScore") {
+        av = a.pcrScore ?? 101;
+        bv = b.pcrScore ?? 101;
       } else if (sortKey.startsWith("rule_")) {
         const ruleId = sortKey.slice(5);
         av = a.ruleScores[ruleId] ?? -1;
@@ -82,19 +87,22 @@ export default function DriverTable({
       driverRows,
       settings.selectedRuleIds,
       ruleMap,
-      isMetric
+      isMetric,
+      showPcr,
+      entityLabel
     );
-    exportCsv("driver_scorecard.csv", headers, rows);
+    const filename = entityLabel === "Asset" ? "asset_scorecard.csv" : "driver_scorecard.csv";
+    exportCsv(filename, headers, rows);
   }
 
   return (
     <div>
       <div className="scorecard-table-header">
-        <h3>All Drivers ({filtered.length})</h3>
+        <h3>All {entityLabel === "Asset" ? "Assets" : "Drivers"} ({filtered.length})</h3>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <input
             className="scorecard-search"
-            placeholder="Search drivers…"
+            placeholder={`Search ${entityLabel === "Asset" ? "assets" : "drivers"}…`}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -123,7 +131,7 @@ export default function DriverTable({
           <thead>
             <tr>
               <th onClick={() => handleSort("driverName")}>
-                Driver
+                {entityLabel || "Driver"}
                 <span className="scorecard-sort-indicator">
                   {indicator("driverName")}
                 </span>
@@ -135,6 +143,15 @@ export default function DriverTable({
                 </span>
               </th>
               <th>Risk</th>
+              {showPcr && (
+                <th onClick={() => handleSort("pcrScore")}>
+                  PCR
+                  <span className="scorecard-sort-indicator">
+                    {indicator("pcrScore")}
+                  </span>
+                </th>
+              )}
+              {showPcr && <th>PCR Risk</th>}
               <th onClick={() => handleSort("distanceKm")}>
                 {isMetric ? "Distance (km)" : "Distance (mi)"}
                 <span className="scorecard-sort-indicator">
@@ -165,6 +182,7 @@ export default function DriverTable({
                 ruleColumns={ruleColumns}
                 isMetric={isMetric}
                 onDriverClick={onDriverClick}
+                showPcr={showPcr}
               />
             ))}
           </tbody>

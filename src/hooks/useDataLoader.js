@@ -34,6 +34,7 @@ export function useDataLoader() {
       allDrivers,
       allDevices,
       deviceIds,
+      entityMode,
       onProgress,
     }) => {
       abort();
@@ -48,36 +49,57 @@ export function useDataLoader() {
       const fromISO = new Date(fromDate).toISOString();
       const toISO = new Date(toDate + "T23:59:59").toISOString();
 
-      // Step 1: Fetch DriverChanges (10%)
-      onProgress("Fetching driver assignments…", 5);
-      checkAbort();
+      // Step 1: Fetch DriverChanges or build device intervals (10%)
+      let filteredIntervals;
+      let filteredDriverIds;
 
-      const driverChanges = await apiCall(api, "Get", {
-        typeName: "DriverChange",
-        search: {
-          fromDate: fromISO,
-          toDate: toISO,
-          includeOverlappedChanges: true,
-        },
-        resultsLimit: RESULTS_LIMIT,
-      });
-      checkAbort();
+      if (entityMode === "assets") {
+        // Asset mode: skip DriverChange, build one interval per device
+        onProgress("Building asset intervals…", 5);
+        checkAbort();
 
-      const intervals = buildDriverIntervals(driverChanges, fromISO, toISO);
-      const activeDriverIds = [...new Set(intervals.map((iv) => iv.driverId))];
+        const devList = deviceIds
+          ? allDevices.filter((d) => deviceIds.includes(d.id))
+          : allDevices;
 
-      // If group filtering, filter intervals by allowed devices
-      let filteredIntervals = intervals;
-      if (deviceIds) {
-        const deviceSet = new Set(deviceIds);
-        filteredIntervals = intervals.filter((iv) =>
-          deviceSet.has(iv.deviceId)
-        );
+        filteredIntervals = devList.map((dev) => ({
+          driverId: dev.id,
+          deviceId: dev.id,
+          from: fromISO,
+          to: toISO,
+        }));
+        filteredDriverIds = devList.map((d) => d.id);
+      } else {
+        // Driver mode: fetch DriverChange records
+        onProgress("Fetching driver assignments…", 5);
+        checkAbort();
+
+        const driverChanges = await apiCall(api, "Get", {
+          typeName: "DriverChange",
+          search: {
+            fromDate: fromISO,
+            toDate: toISO,
+            includeOverlappedChanges: true,
+          },
+          resultsLimit: RESULTS_LIMIT,
+        });
+        checkAbort();
+
+        const intervals = buildDriverIntervals(driverChanges, fromISO, toISO);
+
+        // If group filtering, filter intervals by allowed devices
+        filteredIntervals = intervals;
+        if (deviceIds) {
+          const deviceSet = new Set(deviceIds);
+          filteredIntervals = intervals.filter((iv) =>
+            deviceSet.has(iv.deviceId)
+          );
+        }
+
+        filteredDriverIds = [
+          ...new Set(filteredIntervals.map((iv) => iv.driverId)),
+        ];
       }
-
-      const filteredDriverIds = [
-        ...new Set(filteredIntervals.map((iv) => iv.driverId)),
-      ];
 
       onProgress("Fetching driver assignments…", 10);
 
@@ -166,8 +188,15 @@ export function useDataLoader() {
         filteredIntervals
       );
 
+      // Build entity name map (driver names or device names depending on mode)
       const driverMap = {};
-      for (const d of allDrivers) driverMap[d.id] = d;
+      if (entityMode === "assets") {
+        for (const d of allDevices) {
+          driverMap[d.id] = { firstName: d.name || d.id, lastName: "" };
+        }
+      } else {
+        for (const d of allDrivers) driverMap[d.id] = d;
+      }
 
       const driverRows = buildDriverRows({
         driverIds: filteredDriverIds,

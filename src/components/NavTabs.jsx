@@ -2,7 +2,10 @@ export default function NavTabs({
   activeView,
   onTabChange,
   activeDriverName,
+  entityLabel,
 }) {
+  const detailLabel = `${entityLabel || "Driver"} Detail`;
+
   return (
     <div className="scorecard-tabs">
       <button
@@ -16,7 +19,7 @@ export default function NavTabs({
         disabled={!activeDriverName}
         onClick={() => onTabChange("detail")}
       >
-        Driver Detail
+        {detailLabel}
         {activeDriverName && (
           <span className="scorecard-tab-breadcrumb">
             {" "}

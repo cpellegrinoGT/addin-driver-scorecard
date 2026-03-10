@@ -6,6 +6,7 @@ export default function KpiTiles({
   highRiskCount,
   totalDistance,
   isMetric,
+  entityLabel,
 }) {
   const distLabel = isMetric ? "km" : "mi";
   const distValue = isMetric ? totalDistance : totalDistance * 0.621371;
@@ -41,7 +42,7 @@ export default function KpiTiles({
       </div>
       <div className="scorecard-kpi">
         <div className="scorecard-kpi-value">{driversScored}</div>
-        <div className="scorecard-kpi-label">Drivers Scored</div>
+        <div className="scorecard-kpi-label">{entityLabel === "Asset" ? "Assets" : "Drivers"} Scored</div>
       </div>
       <div className="scorecard-kpi">
         <div className="scorecard-kpi-value">{highRiskCount}</div>

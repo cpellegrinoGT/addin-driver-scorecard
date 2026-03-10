@@ -12,6 +12,8 @@ export const DEFAULT_SETTINGS = {
   ruleColors: {},
   thresholds: { ...DEFAULT_THRESHOLDS },
   savedViews: [],
+  showPcr: false,
+  entityMode: "drivers", // "drivers" | "assets"
 };
 
 function loadFromStorage(key, fallback) {
@@ -41,6 +43,8 @@ export function useSettings() {
         ruleColors: stored.ruleColors || {},
         thresholds: stored.thresholds || { ...DEFAULT_THRESHOLDS },
         savedViews: loadFromStorage(VIEWS_STORAGE_KEY, []),
+        showPcr: stored.showPcr !== undefined ? stored.showPcr : false,
+        entityMode: stored.entityMode || "drivers",
       };
     }
     return { ...DEFAULT_SETTINGS };

@@ -28,6 +28,23 @@ export const RISK_COLORS = {
   noActivity: "#6c757d",
 };
 
+export const PCR_RISK_LABELS = {
+  low: "Low Risk",
+  moderate: "Moderate Risk",
+  high: "High Risk",
+  noActivity: "No Activity",
+};
+
+export const PCR_RISK_COLORS = {
+  low: "#28a745",
+  moderate: "#fd7e14",
+  high: "#dc3545",
+  noActivity: "#6c757d",
+};
+
+// Color for the PCR trend line in charts
+export const PCR_COLOR = "#dc3545";
+
 export const RULE_PALETTE = [
   "#4a90d9",
   "#e74c3c",

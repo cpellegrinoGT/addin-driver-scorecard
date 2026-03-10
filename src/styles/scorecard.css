@@ -1075,3 +1075,73 @@ html, body {
   gap: 8px;
   margin-bottom: 16px;
 }
+
+/* ===== PCR Risk Badges ===== */
+#scorecard-root .scorecard-badge-pcr-low {
+  background: #d4edda;
+  color: #155724;
+}
+
+#scorecard-root .scorecard-badge-pcr-moderate {
+  background: #ffe0cc;
+  color: #8a4500;
+}
+
+#scorecard-root .scorecard-badge-pcr-high {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+#scorecard-root .scorecard-badge-pcr-noActivity {
+  background: #e9ecef;
+  color: #495057;
+}
+
+/* ===== Settings - General Tab ===== */
+#scorecard-root .scorecard-settings-section h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+#scorecard-root .scorecard-entity-toggle {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+#scorecard-root .scorecard-entity-btn {
+  padding: 7px 20px;
+  border: none;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #555;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+#scorecard-root .scorecard-entity-btn:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+#scorecard-root .scorecard-entity-btn.active {
+  background: #4a90d9;
+  color: #fff;
+}
+
+#scorecard-root .scorecard-entity-btn:hover:not(.active) {
+  background: #e8eef5;
+}
+
+#scorecard-root .scorecard-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}

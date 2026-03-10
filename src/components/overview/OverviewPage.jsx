@@ -22,6 +22,8 @@ export default function OverviewPage({
   rawData,
   trendGranularity,
   onGranularityChange,
+  showPcr,
+  entityLabel,
 }) {
   const { driverRows, riskDistribution, dateRange } = data;
 
@@ -58,6 +60,7 @@ export default function OverviewPage({
         highRiskCount={highRiskCount}
         totalDistance={totalDistance}
         isMetric={isMetric}
+        entityLabel={entityLabel}
       />
 
       <div className="scorecard-charts-row">
@@ -99,6 +102,7 @@ export default function OverviewPage({
         <TrendChart
           buckets={fleetTrendBuckets}
           thresholds={settings.thresholds}
+          showPcr={showPcr}
         />
       </div>
 
@@ -108,6 +112,8 @@ export default function OverviewPage({
         ruleMap={ruleMap}
         isMetric={isMetric}
         onDriverClick={onDriverClick}
+        showPcr={showPcr}
+        entityLabel={entityLabel}
       />
     </div>
   );

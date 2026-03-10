@@ -1,10 +1,11 @@
-import { RISK_LABELS } from "../../lib/constants.js";
+import { RISK_LABELS, PCR_RISK_LABELS, PCR_RISK_COLORS } from "../../lib/constants.js";
 
 export default function DriverTableRow({
   row,
   ruleColumns,
   isMetric,
   onDriverClick,
+  showPcr,
 }) {
   const distance = isMetric
     ? row.distanceKm
@@ -28,6 +29,20 @@ export default function DriverTableRow({
           {RISK_LABELS[row.risk]}
         </span>
       </td>
+      {showPcr && (
+        <td className="scorecard-score-cell">
+          {row.pcrScore !== null ? row.pcrScore.toFixed(1) : "-"}
+        </td>
+      )}
+      {showPcr && (
+        <td>
+          <span
+            className={`scorecard-badge scorecard-badge-pcr-${row.pcrRisk}`}
+          >
+            {PCR_RISK_LABELS[row.pcrRisk] || "-"}
+          </span>
+        </td>
+      )}
       <td style={{ textAlign: "right" }}>
         {row.distanceKm > 0
           ? Math.round(distance).toLocaleString()
