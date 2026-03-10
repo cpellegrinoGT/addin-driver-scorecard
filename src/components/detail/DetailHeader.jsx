@@ -43,7 +43,7 @@ export default function DetailHeader({
         </span>
         {showSafety && scSummary?.crashProbabilityKm != null && (
           <div style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
-            Crash Prob: {(scSummary.crashProbabilityKm * 100000).toFixed(2)} / 100K {isMetric ? "km" : "mi"}
+            Crash Prob: {scSummary.crashProbabilityKm.toFixed(4)}
           </div>
         )}
       </div>

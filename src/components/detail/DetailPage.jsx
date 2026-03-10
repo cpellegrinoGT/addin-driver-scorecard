@@ -4,7 +4,6 @@ import RuleBreakdownChart from "./RuleBreakdownChart.jsx";
 import TrendChart from "./TrendChart.jsx";
 import RuleBreakdownTable from "./RuleBreakdownTable.jsx";
 import SafetyRankPanel from "./SafetyRankPanel.jsx";
-import SafetyTrendChart from "./SafetyTrendChart.jsx";
 import { buildTrendBuckets } from "../../lib/scoring.js";
 import { getKeyFn } from "../../lib/dateUtils.js";
 import { exportCsv, buildDriverDetailCsvRows } from "../../lib/exportCsv.js";
@@ -169,16 +168,14 @@ export default function DetailPage({
             <TrendChart
               buckets={trendBuckets}
               thresholds={settings.thresholds}
+              safetyTrend={scTrend}
             />
           </div>
         </div>
       </div>
 
       {showSafety && safetyCenterData && (
-        <>
-          <SafetyRankPanel summary={scSummary} isMetric={isMetric} />
-          <SafetyTrendChart trendData={scTrend} />
-        </>
+        <SafetyRankPanel summary={scSummary} isMetric={isMetric} />
       )}
     </div>
   );

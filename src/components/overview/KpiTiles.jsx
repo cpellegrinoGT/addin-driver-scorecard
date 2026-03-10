@@ -59,20 +59,20 @@ export default function KpiTiles({
       {showSafety && fleetCrashProbability != null && (
         <div className="scorecard-kpi">
           <div className="scorecard-kpi-value">
-            {(fleetCrashProbability * 100000).toFixed(2)}
+            {fleetCrashProbability.toFixed(4)}
             <span className="scorecard-info-wrap">
               <span className="scorecard-info-icon">i</span>
               <span className="scorecard-info-tooltip">
                 <strong>Predictive Collision Risk</strong>
                 <br /><br />
-                Average crash probability per 100K {isMetric ? "km" : "mi"} across
-                enrolled {entityLabel === "Asset" ? "assets" : "drivers"}, sourced
-                from Geotab Safety Center. Data has a 2-3 day lag.
+                Average crash probability across enrolled{" "}
+                {entityLabel === "Asset" ? "assets" : "drivers"}, sourced from
+                Geotab Safety Center. Data has a 2-3 day lag.
               </span>
             </span>
           </div>
           <div className="scorecard-kpi-label">
-            Fleet Crash Prob. (per 100K {isMetric ? "km" : "mi"})
+            Fleet Crash Prob. ({isMetric ? "km" : "mi"})
           </div>
         </div>
       )}

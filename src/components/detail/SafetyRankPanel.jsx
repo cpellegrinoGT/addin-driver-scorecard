@@ -38,19 +38,25 @@ export default function SafetyRankPanel({ summary, isMetric }) {
       <div className="sc-crash-grid">
         <div className="sc-crash-cell">
           <div className="sc-crash-value">
-            {crashProb != null ? (crashProb * 100000).toFixed(2) : "-"}
+            {crashProb != null ? crashProb.toFixed(4) : "-"}
           </div>
           <div className="sc-crash-label">
-            Crash Prob. (per 100K {unit})
+            Crash Probability ({unit})
           </div>
         </div>
         <div className="sc-crash-cell">
-          <div className="sc-crash-value sc-crash-benchmark">~3.00</div>
-          <div className="sc-crash-label">Benchmark (50th pct)</div>
+          <div className="sc-crash-value">
+            {summary.overallSafetyRank != null
+              ? summary.overallSafetyRank.toFixed(0)
+              : "-"}
+          </div>
+          <div className="sc-crash-label">Safety Rank (percentile)</div>
         </div>
         <div className="sc-crash-cell">
-          <div className="sc-crash-value sc-crash-best">~1.50</div>
-          <div className="sc-crash-label">Best-in-Class (80th pct)</div>
+          <div className="sc-crash-value">
+            {summary.collisionCount ?? 0}
+          </div>
+          <div className="sc-crash-label">Collisions</div>
         </div>
       </div>
 
@@ -78,20 +84,14 @@ export default function SafetyRankPanel({ summary, isMetric }) {
         );
       })}
 
-      <div style={{ display: "flex", gap: 16, marginTop: 12, fontSize: 13 }}>
-        <span>
-          Collisions:{" "}
-          <strong>{summary.collisionCount ?? 0}</strong>
-        </span>
-        {summary.areaRiskClassification && (
-          <span>
-            Area Risk:{" "}
-            <span className="scorecard-badge scorecard-badge-mild">
-              {summary.areaRiskClassification}
-            </span>
+      {summary.areaRiskClassification && (
+        <div style={{ marginTop: 12, fontSize: 13 }}>
+          Area Risk:{" "}
+          <span className="scorecard-badge scorecard-badge-mild">
+            {summary.areaRiskClassification}
           </span>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

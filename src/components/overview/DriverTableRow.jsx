@@ -75,7 +75,7 @@ export default function DriverTableRow({
           </td>
           <td style={{ textAlign: "right" }}>
             {scSummary?.crashProbabilityKm != null
-              ? (scSummary.crashProbabilityKm * 100000).toFixed(2)
+              ? scSummary.crashProbabilityKm.toFixed(4)
               : "-"}
           </td>
         </>

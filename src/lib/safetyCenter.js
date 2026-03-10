@@ -76,12 +76,15 @@ export function aggregateSafetyInsights(records, entityMode) {
       (a, b) => new Date(a.dateTime || a.date) - new Date(b.dateTime || b.date)
     );
 
-    // Build trend array
-    const trend = dailyRecords.map((r) => ({
-      date: (r.dateTime || r.date || "").slice(0, 10),
-      overallSafetyRank: r.overallSafetyRank ?? null,
-      crashProbabilityKm: r.crashProbabilityKm ?? null,
-    }));
+    // Build trend array — normalize ranks from 0-1 to 0-100 if needed
+    const trend = dailyRecords.map((r) => {
+      const rank = r.overallSafetyRank ?? null;
+      return {
+        date: (r.dateTime || r.date || "").slice(0, 10),
+        overallSafetyRank: rank != null ? (rank <= 1 ? rank * 100 : rank) : null,
+        crashProbabilityKm: r.crashProbabilityKm ?? null,
+      };
+    });
     trendByEntity.set(entityId, trend);
 
     // Aggregate averages across the period
@@ -160,17 +163,27 @@ export function aggregateSafetyInsights(records, entityMode) {
       }
     }
 
+    // Compute raw averages
+    const rawRank = countRank > 0 ? sumRank / countRank : null;
+    const rawAccel = countAccel > 0 ? sumAccel / countAccel : null;
+    const rawBrake = countBrake > 0 ? sumBrake / countBrake : null;
+    const rawCornering = countCornering > 0 ? sumCornering / countCornering : null;
+    const rawSpeeding = countSpeeding > 0 ? sumSpeeding / countSpeeding : null;
+    const rawSeatbelt = countSeatbelt > 0 ? sumSeatbelt / countSeatbelt : null;
+
+    // API returns ranks on 0-1 scale (percentiles); normalize to 0-100
+    const toPercent = (v) => (v != null ? (v <= 1 ? v * 100 : v) : null);
+
     summaryByEntity.set(entityId, {
       crashProbabilityKm: countCrashKm > 0 ? sumCrashKm / countCrashKm : null,
       crashProbabilityMile:
         countCrashMile > 0 ? sumCrashMile / countCrashMile : null,
-      overallSafetyRank: countRank > 0 ? sumRank / countRank : null,
-      harshAccelerationRank: countAccel > 0 ? sumAccel / countAccel : null,
-      harshBrakingRank: countBrake > 0 ? sumBrake / countBrake : null,
-      harshCorneringRank:
-        countCornering > 0 ? sumCornering / countCornering : null,
-      speedingRank: countSpeeding > 0 ? sumSpeeding / countSpeeding : null,
-      seatbeltRank: countSeatbelt > 0 ? sumSeatbelt / countSeatbelt : null,
+      overallSafetyRank: toPercent(rawRank),
+      harshAccelerationRank: toPercent(rawAccel),
+      harshBrakingRank: toPercent(rawBrake),
+      harshCorneringRank: toPercent(rawCornering),
+      speedingRank: toPercent(rawSpeeding),
+      seatbeltRank: toPercent(rawSeatbelt),
       collisionCount: totalCollisions,
       areaRiskClassification,
       isEnrolled,

@@ -59,8 +59,8 @@ export default function SafetyTrendChart({ trendData }) {
           tooltip: {
             callbacks: {
               label: (ctx) =>
-                ctx.raw !== null
-                  ? `Safety Rank: ${ctx.raw.toFixed(0)}`
+                ctx.raw != null
+                  ? `Safety Rank: ${Number(ctx.raw).toFixed(0)}`
                   : "No data",
             },
           },
