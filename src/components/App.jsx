@@ -306,7 +306,6 @@ const App = forwardRef(function App(props, ref) {
                   isMetric={state.isMetric}
                   rawData={rawDataRef.current}
                   trendGranularity={state.trendGranularity}
-                  showPcr={settings.showPcr}
                   entityLabel={entityLabel}
                   onGranularityChange={(g) =>
                     dispatch({
@@ -333,7 +332,6 @@ const App = forwardRef(function App(props, ref) {
                   allDrivers={state.allDrivers}
                   isMetric={state.isMetric}
                   trendGranularity={state.trendGranularity}
-                  showPcr={settings.showPcr}
                   entityLabel={entityLabel}
                   onGranularityChange={(g) =>
                     dispatch({

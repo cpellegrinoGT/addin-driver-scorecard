@@ -1,26 +1,6 @@
 import { DEFAULT_THRESHOLDS, RISK_LABELS } from "./constants.js";
 
 /**
- * PCR Score = 100 - safety score (higher = more collision risk).
- */
-export function computePcrScore(totalScore) {
-  if (totalScore === null) return null;
-  return Math.max(0, Math.min(100, 100 - totalScore));
-}
-
-/**
- * PCR Risk: "low" | "moderate" | "high" | "noActivity"
- * Uses the safety thresholds in reverse — a low safety score = high PCR risk.
- */
-export function computePcrRisk(totalScore, thresholds) {
-  const t = thresholds || DEFAULT_THRESHOLDS;
-  if (totalScore === null) return "noActivity";
-  if (totalScore >= t.mild) return "low";
-  if (totalScore >= t.medium) return "moderate";
-  return "high";
-}
-
-/**
  * Per-rule score = MAX(100 - (eventCount * 1000 / distanceKm), 0)
  */
 export function computeRuleScore(eventCount, distanceKm) {
@@ -84,8 +64,6 @@ export function buildDriverRows({
 
     const totalScore = computeTotalScore(ruleScores, ruleWeights);
     const risk = classifyRisk(totalScore, thresholds);
-    const pcrScore = computePcrScore(totalScore);
-    const pcrRisk = computePcrRisk(totalScore, thresholds);
     const driver = driverMap[driverId];
 
     return {
@@ -97,8 +75,6 @@ export function buildDriverRows({
       ruleScores,
       totalScore,
       risk,
-      pcrScore,
-      pcrRisk,
       eventCounts: Object.fromEntries(
         selectedRuleIds.map((ruleId) => [
           ruleId,
@@ -180,7 +156,6 @@ export function buildTrendBuckets({
       ruleScores,
       totalScore,
       risk: classifyRisk(totalScore, thresholds),
-      pcrScore: computePcrScore(totalScore),
     };
   });
 }
@@ -248,7 +223,6 @@ export function buildFleetTrendBuckets({
       ruleScores,
       totalScore,
       risk: classifyRisk(totalScore, thresholds),
-      pcrScore: computePcrScore(totalScore),
     };
   });
 }

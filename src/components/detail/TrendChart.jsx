@@ -8,9 +8,8 @@ import {
   LinearScale,
   Tooltip,
   Filler,
-  Legend,
 } from "chart.js";
-import { RISK_COLORS, PCR_COLOR } from "../../lib/constants.js";
+import { RISK_COLORS } from "../../lib/constants.js";
 
 Chart.register(
   LineElement,
@@ -19,11 +18,10 @@ Chart.register(
   CategoryScale,
   LinearScale,
   Tooltip,
-  Filler,
-  Legend
+  Filler
 );
 
-export default function TrendChart({ buckets, thresholds, showPcr }) {
+export default function TrendChart({ buckets, thresholds }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
 
@@ -35,52 +33,32 @@ export default function TrendChart({ buckets, thresholds, showPcr }) {
     const labels = buckets.map((b) => b.key);
     const scores = buckets.map((b) => b.totalScore);
 
-    const datasets = [
-      {
-        label: "Safety Score",
-        data: scores,
-        borderColor: "#4a90d9",
-        backgroundColor: "rgba(74,144,217,0.1)",
-        fill: true,
-        tension: 0.3,
-        pointRadius: 3,
-        pointBackgroundColor: "#4a90d9",
-      },
-    ];
-
-    if (showPcr) {
-      const pcrScores = buckets.map((b) => b.pcrScore ?? null);
-      datasets.push({
-        label: "PCR (Collision Risk)",
-        data: pcrScores,
-        borderColor: PCR_COLOR,
-        backgroundColor: "rgba(220,53,69,0.05)",
-        fill: false,
-        tension: 0.3,
-        pointRadius: 3,
-        pointBackgroundColor: PCR_COLOR,
-        borderDash: [5, 3],
-      });
-    }
-
     chartRef.current = new Chart(canvasRef.current, {
       type: "line",
-      data: { labels, datasets },
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Score",
+            data: scores,
+            borderColor: "#4a90d9",
+            backgroundColor: "rgba(74,144,217,0.1)",
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointBackgroundColor: "#4a90d9",
+          },
+        ],
+      },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            display: showPcr,
-            position: "top",
-            labels: { font: { size: 11 }, boxWidth: 14, padding: 12 },
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (ctx) => {
-                if (ctx.raw === null) return `${ctx.dataset.label}: No data`;
-                return `${ctx.dataset.label}: ${ctx.raw.toFixed(1)}`;
-              },
+              label: (ctx) =>
+                ctx.raw !== null ? `Score: ${ctx.raw.toFixed(1)}` : "No data",
             },
           },
         },
@@ -148,7 +126,7 @@ export default function TrendChart({ buckets, thresholds, showPcr }) {
         chartRef.current = null;
       }
     };
-  }, [buckets, thresholds, showPcr]);
+  }, [buckets, thresholds]);
 
   if (buckets.length === 0) {
     return (

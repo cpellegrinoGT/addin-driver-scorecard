@@ -9,7 +9,6 @@ export default function DriverTable({
   ruleMap,
   isMetric,
   onDriverClick,
-  showPcr,
   entityLabel,
 }) {
   const [search, setSearch] = useState("");
@@ -45,9 +44,6 @@ export default function DriverTable({
       } else if (sortKey === "totalScore") {
         av = a.totalScore ?? -1;
         bv = b.totalScore ?? -1;
-      } else if (sortKey === "pcrScore") {
-        av = a.pcrScore ?? 101;
-        bv = b.pcrScore ?? 101;
       } else if (sortKey.startsWith("rule_")) {
         const ruleId = sortKey.slice(5);
         av = a.ruleScores[ruleId] ?? -1;
@@ -88,7 +84,6 @@ export default function DriverTable({
       settings.selectedRuleIds,
       ruleMap,
       isMetric,
-      showPcr,
       entityLabel
     );
     const filename = entityLabel === "Asset" ? "asset_scorecard.csv" : "driver_scorecard.csv";
@@ -143,15 +138,6 @@ export default function DriverTable({
                 </span>
               </th>
               <th>Risk</th>
-              {showPcr && (
-                <th onClick={() => handleSort("pcrScore")}>
-                  PCR
-                  <span className="scorecard-sort-indicator">
-                    {indicator("pcrScore")}
-                  </span>
-                </th>
-              )}
-              {showPcr && <th>PCR Risk</th>}
               <th onClick={() => handleSort("distanceKm")}>
                 {isMetric ? "Distance (km)" : "Distance (mi)"}
                 <span className="scorecard-sort-indicator">
@@ -182,7 +168,6 @@ export default function DriverTable({
                 ruleColumns={ruleColumns}
                 isMetric={isMetric}
                 onDriverClick={onDriverClick}
-                showPcr={showPcr}
               />
             ))}
           </tbody>

@@ -1076,27 +1076,6 @@ html, body {
   margin-bottom: 16px;
 }
 
-/* ===== PCR Risk Badges ===== */
-#scorecard-root .scorecard-badge-pcr-low {
-  background: #d4edda;
-  color: #155724;
-}
-
-#scorecard-root .scorecard-badge-pcr-moderate {
-  background: #ffe0cc;
-  color: #8a4500;
-}
-
-#scorecard-root .scorecard-badge-pcr-high {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-#scorecard-root .scorecard-badge-pcr-noActivity {
-  background: #e9ecef;
-  color: #495057;
-}
-
 /* ===== Settings - General Tab ===== */
 #scorecard-root .scorecard-settings-section h4 {
   margin: 0 0 6px;
@@ -1136,12 +1115,4 @@ html, body {
 
 #scorecard-root .scorecard-entity-btn:hover:not(.active) {
   background: #e8eef5;
-}
-
-#scorecard-root .scorecard-checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-size: 13px;
 }

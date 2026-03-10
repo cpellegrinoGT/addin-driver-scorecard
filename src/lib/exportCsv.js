@@ -30,7 +30,6 @@ export function buildScorecardCsvRows(
   selectedRuleIds,
   ruleMap,
   isMetric,
-  showPcr,
   entityLabel
 ) {
   const entityCol = entityLabel === "Asset" ? "Asset" : "Driver";
@@ -38,22 +37,14 @@ export function buildScorecardCsvRows(
     entityCol,
     "Total Score",
     "Risk",
+    isMetric ? "Distance (km)" : "Distance (mi)",
   ];
-
-  if (showPcr) {
-    headers.push("PCR Score");
-    headers.push("PCR Risk");
-  }
-
-  headers.push(isMetric ? "Distance (km)" : "Distance (mi)");
 
   for (const ruleId of selectedRuleIds) {
     const name = ruleMap[ruleId]?.name || ruleId;
     headers.push(`${name} Score`);
     headers.push(`${name} Events`);
   }
-
-  const distHeader = isMetric ? "Distance (km)" : "Distance (mi)";
 
   const rows = driverRows.map((row) => {
     const distance = isMetric
@@ -66,13 +57,7 @@ export function buildScorecardCsvRows(
         row.totalScore !== null ? row.totalScore.toFixed(1) : "",
       Risk: row.risk === "noActivity" ? "No Activity" : row.risk,
     };
-
-    if (showPcr) {
-      obj["PCR Score"] = row.pcrScore !== null ? row.pcrScore.toFixed(1) : "";
-      obj["PCR Risk"] = row.pcrRisk === "noActivity" ? "No Activity" : (row.pcrRisk || "");
-    }
-
-    obj[distHeader] = Math.round(distance);
+    obj[headers[3]] = Math.round(distance);
 
     for (const ruleId of selectedRuleIds) {
       const name = ruleMap[ruleId]?.name || ruleId;
@@ -87,7 +72,7 @@ export function buildScorecardCsvRows(
   return { headers, rows };
 }
 
-export function buildDriverDetailCsvRows(driverRow, ruleMap, isMetric, showPcr) {
+export function buildDriverDetailCsvRows(driverRow, ruleMap, isMetric) {
   const headers = ["Rule", "Score", "Events", "Weight (%)"];
   const rows = Object.keys(driverRow.ruleScores).map((ruleId) => {
     const score = driverRow.ruleScores[ruleId];
@@ -109,15 +94,6 @@ export function buildDriverDetailCsvRows(driverRow, ruleMap, isMetric, showPcr) 
     Events: "",
     "Weight (%)": "",
   });
-
-  if (showPcr) {
-    rows.push({
-      Rule: "PCR (Collision Risk)",
-      Score: driverRow.pcrScore !== null ? driverRow.pcrScore.toFixed(1) : "",
-      Events: driverRow.pcrRisk === "noActivity" ? "No Activity" : (driverRow.pcrRisk || ""),
-      "Weight (%)": "",
-    });
-  }
 
   rows.push({
     Rule: isMetric ? "Distance (km)" : "Distance (mi)",
