@@ -295,6 +295,14 @@ const App = forwardRef(function App(props, ref) {
                   allDrivers={state.allDrivers}
                   allGroups={state.allGroups}
                   isMetric={state.isMetric}
+                  rawData={rawDataRef.current}
+                  trendGranularity={state.trendGranularity}
+                  onGranularityChange={(g) =>
+                    dispatch({
+                      type: "SET_TREND_GRANULARITY",
+                      granularity: g,
+                    })
+                  }
                   onDriverClick={(driverId) =>
                     dispatch({
                       type: "SET_ACTIVE_VIEW",

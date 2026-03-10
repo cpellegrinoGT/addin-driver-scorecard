@@ -15,6 +15,27 @@ export default function KpiTiles({
       <div className="scorecard-kpi">
         <div className="scorecard-kpi-value">
           {fleetScore !== null ? fleetScore.toFixed(1) : "-"}
+          <span className="scorecard-info-wrap">
+            <span className="scorecard-info-icon">i</span>
+            <span className="scorecard-info-tooltip">
+              <strong>How scores are calculated</strong>
+              <br /><br />
+              <strong>Per-rule score:</strong>
+              <br />
+              MAX(100 &minus; (events &times; 1000 &divide; distance in km), 0)
+              <br /><br />
+              <strong>Total score:</strong>
+              <br />
+              Weighted average of all rule scores. Rules where a driver has no
+              activity are excluded and weights are renormalized.
+              <br /><br />
+              <strong>Risk tiers (default):</strong>
+              <br />
+              Low &ge; 95 &nbsp;|&nbsp; Mild &ge; 75 &nbsp;|&nbsp; Medium &ge; 60 &nbsp;|&nbsp; High &lt; 60
+              <br /><br />
+              Thresholds and weights are configurable in Settings.
+            </span>
+          </span>
         </div>
         <div className="scorecard-kpi-label">Fleet Score</div>
       </div>

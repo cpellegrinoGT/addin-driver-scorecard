@@ -160,6 +160,73 @@ export function buildTrendBuckets({
   });
 }
 
+/**
+ * Build fleet-level trend buckets by aggregating all drivers' trips/events.
+ */
+export function buildFleetTrendBuckets({
+  rawData,
+  selectedRuleIds,
+  ruleWeights,
+  thresholds,
+  keyFn,
+}) {
+  const buckets = {};
+
+  // Aggregate all driver trips
+  for (const [driverId, trips] of Object.entries(rawData.driverTrips)) {
+    for (const trip of trips) {
+      const key = keyFn(trip.start || trip.dateTime);
+      if (!buckets[key]) {
+        buckets[key] = { distanceKm: 0, events: {} };
+        for (const ruleId of selectedRuleIds) {
+          buckets[key].events[ruleId] = 0;
+        }
+      }
+      buckets[key].distanceKm += trip.distance || 0;
+    }
+  }
+
+  // Aggregate all driver events
+  for (const [driverId, ruleEvents] of Object.entries(
+    rawData.driverEventMap
+  )) {
+    for (const ruleId of selectedRuleIds) {
+      const events = ruleEvents[ruleId] || [];
+      for (const evt of events) {
+        const key = keyFn(evt.activeFrom || evt.dateTime);
+        if (!buckets[key]) {
+          buckets[key] = { distanceKm: 0, events: {} };
+          for (const rid of selectedRuleIds) {
+            buckets[key].events[rid] = 0;
+          }
+        }
+        buckets[key].events[ruleId] =
+          (buckets[key].events[ruleId] || 0) + 1;
+      }
+    }
+  }
+
+  const sortedKeys = Object.keys(buckets).sort();
+  return sortedKeys.map((key) => {
+    const b = buckets[key];
+    const ruleScores = {};
+    for (const ruleId of selectedRuleIds) {
+      ruleScores[ruleId] = computeRuleScore(
+        b.events[ruleId] || 0,
+        b.distanceKm
+      );
+    }
+    const totalScore = computeTotalScore(ruleScores, ruleWeights);
+    return {
+      key,
+      distanceKm: b.distanceKm,
+      ruleScores,
+      totalScore,
+      risk: classifyRisk(totalScore, thresholds),
+    };
+  });
+}
+
 export function getTopPerformers(driverRows, count = 5) {
   return [...driverRows]
     .filter((r) => r.totalScore !== null)

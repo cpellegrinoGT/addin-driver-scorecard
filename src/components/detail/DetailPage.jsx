@@ -4,6 +4,7 @@ import RuleBreakdownChart from "./RuleBreakdownChart.jsx";
 import TrendChart from "./TrendChart.jsx";
 import { buildTrendBuckets } from "../../lib/scoring.js";
 import { getKeyFn } from "../../lib/dateUtils.js";
+import { exportCsv, buildDriverDetailCsvRows } from "../../lib/exportCsv.js";
 import { useMemo } from "react";
 
 export default function DetailPage({
@@ -59,6 +60,16 @@ export default function DetailPage({
     });
   }, [driverId, rawData, settings, trendGranularity]);
 
+  function handleExportCsv() {
+    const { headers, rows } = buildDriverDetailCsvRows(
+      driverRow,
+      ruleMap,
+      isMetric
+    );
+    const safeName = driverRow.driverName.replace(/[^a-zA-Z0-9]/g, "_");
+    exportCsv(`${safeName}_scorecard.csv`, headers, rows);
+  }
+
   return (
     <div>
       <DetailHeader
@@ -68,6 +79,21 @@ export default function DetailPage({
         isMetric={isMetric}
         onBack={onBack}
       />
+
+      <div className="scorecard-export-row">
+        <button
+          className="scorecard-btn scorecard-btn-outline scorecard-btn-sm"
+          onClick={handleExportCsv}
+        >
+          CSV
+        </button>
+        <button
+          className="scorecard-btn scorecard-btn-outline scorecard-btn-sm"
+          onClick={() => window.print()}
+        >
+          Print
+        </button>
+      </div>
 
       <div className="scorecard-detail-grid">
         <div className="scorecard-gauge-wrap">

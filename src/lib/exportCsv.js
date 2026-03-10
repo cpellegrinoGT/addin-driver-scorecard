@@ -69,3 +69,36 @@ export function buildScorecardCsvRows(
 
   return { headers, rows };
 }
+
+export function buildDriverDetailCsvRows(driverRow, ruleMap, isMetric) {
+  const headers = ["Rule", "Score", "Events", "Weight (%)"];
+  const rows = Object.keys(driverRow.ruleScores).map((ruleId) => {
+    const score = driverRow.ruleScores[ruleId];
+    return {
+      Rule: ruleMap[ruleId]?.name || ruleId,
+      Score: score !== null ? score.toFixed(1) : "",
+      Events: driverRow.eventCounts[ruleId] || 0,
+      "Weight (%)": "",
+    };
+  });
+
+  const distance = isMetric
+    ? driverRow.distanceKm
+    : driverRow.distanceKm * 0.621371;
+
+  rows.push({
+    Rule: "TOTAL",
+    Score: driverRow.totalScore !== null ? driverRow.totalScore.toFixed(1) : "",
+    Events: "",
+    "Weight (%)": "",
+  });
+
+  rows.push({
+    Rule: isMetric ? "Distance (km)" : "Distance (mi)",
+    Score: Math.round(distance),
+    Events: "",
+    "Weight (%)": "",
+  });
+
+  return { headers, rows };
+}

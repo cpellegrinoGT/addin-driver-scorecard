@@ -1,8 +1,15 @@
+import { useMemo } from "react";
 import KpiTiles from "./KpiTiles.jsx";
 import RiskDonut from "./RiskDonut.jsx";
 import TopBottomTable from "./TopBottomTable.jsx";
 import DriverTable from "./DriverTable.jsx";
-import { getTopPerformers, getBottomPerformers } from "../../lib/scoring.js";
+import TrendChart from "../detail/TrendChart.jsx";
+import {
+  getTopPerformers,
+  getBottomPerformers,
+  buildFleetTrendBuckets,
+} from "../../lib/scoring.js";
+import { getKeyFn } from "../../lib/dateUtils.js";
 
 export default function OverviewPage({
   data,
@@ -12,6 +19,9 @@ export default function OverviewPage({
   allGroups,
   isMetric,
   onDriverClick,
+  rawData,
+  trendGranularity,
+  onGranularityChange,
 }) {
   const { driverRows, riskDistribution, dateRange } = data;
 
@@ -28,6 +38,17 @@ export default function OverviewPage({
 
   const ruleMap = {};
   for (const r of allRules) ruleMap[r.id] = r;
+
+  const fleetTrendBuckets = useMemo(() => {
+    if (!rawData) return [];
+    return buildFleetTrendBuckets({
+      rawData,
+      selectedRuleIds: settings.selectedRuleIds,
+      ruleWeights: settings.ruleWeights,
+      thresholds: settings.thresholds,
+      keyFn: getKeyFn(trendGranularity),
+    });
+  }, [rawData, settings, trendGranularity]);
 
   return (
     <div>
@@ -56,6 +77,29 @@ export default function OverviewPage({
             onDriverClick={onDriverClick}
           />
         </div>
+      </div>
+
+      <div className="scorecard-chart-card" style={{ marginBottom: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+          <h3 style={{ margin: 0 }}>Fleet Score Trend</h3>
+          <div className="scorecard-trend-controls" style={{ marginBottom: 0 }}>
+            {["day", "week", "month"].map((g) => (
+              <button
+                key={g}
+                className={`scorecard-trend-btn ${
+                  trendGranularity === g ? "active" : ""
+                }`}
+                onClick={() => onGranularityChange(g)}
+              >
+                {g.charAt(0).toUpperCase() + g.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <TrendChart
+          buckets={fleetTrendBuckets}
+          thresholds={settings.thresholds}
+        />
       </div>
 
       <DriverTable
