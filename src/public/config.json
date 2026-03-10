@@ -1,0 +1,14 @@
+{
+  "name": "Driver Safety Scorecard",
+  "supportEmail": "support@example.com",
+  "version": "1.0",
+  "items": [
+    {
+      "url": "https://cpellegrinoGT.github.io/addin-driver-scorecard/scorecard.html",
+      "path": "ActivityLink/",
+      "menuName": { "en": "Driver Scorecard" },
+      "svgIcon": "https://cpellegrinoGT.github.io/addin-driver-scorecard/images/icon.svg"
+    }
+  ],
+  "files": {}
+}

@@ -1,0 +1,66 @@
+@media print {
+  @page {
+    size: landscape;
+    margin: 0.5in;
+  }
+
+  #scorecard-root #scorecard-toolbar,
+  #scorecard-root .scorecard-settings-overlay,
+  #scorecard-root .scorecard-settings-panel,
+  #scorecard-root .scorecard-loading,
+  #scorecard-root .scorecard-tabs,
+  #scorecard-root .scorecard-pagination,
+  #scorecard-root .scorecard-export-row,
+  #scorecard-root .scorecard-table-header .scorecard-search,
+  #scorecard-root .scorecard-btn {
+    display: none !important;
+  }
+
+  #scorecard-container {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  #scorecard-content {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  #scorecard-root .scorecard-table-wrap {
+    overflow: visible !important;
+  }
+
+  #scorecard-root .scorecard-table {
+    font-size: 10px;
+  }
+
+  #scorecard-root .scorecard-table th {
+    position: static;
+    background: #f0f0f0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #scorecard-root .scorecard-table tr {
+    page-break-inside: avoid;
+  }
+
+  #scorecard-root .scorecard-badge {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #scorecard-root .scorecard-kpi {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #scorecard-root .scorecard-charts-row {
+    page-break-after: always;
+  }
+
+  #scorecard-root .scorecard-rule-score-bar {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

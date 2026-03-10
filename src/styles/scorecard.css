@@ -1,0 +1,899 @@
+/* ===== Layout ===== */
+#scorecard-root {
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+#scorecard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#scorecard-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
+  padding: 16px 20px;
+}
+
+/* ===== Toolbar ===== */
+#scorecard-toolbar {
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+#scorecard-root .scorecard-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+#scorecard-root .scorecard-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+#scorecard-root .scorecard-field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#scorecard-root .scorecard-field input[type="date"] {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-multiselect-trigger {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  background: #fff;
+  min-width: 140px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+#scorecard-root .scorecard-caret {
+  font-size: 10px;
+  color: #999;
+}
+
+#scorecard-root .scorecard-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 2000;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  min-width: 200px;
+  margin-top: 2px;
+}
+
+#scorecard-root .scorecard-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+#scorecard-root .scorecard-dropdown-item:hover {
+  background: #f0f4ff;
+}
+
+#scorecard-root .scorecard-check-on {
+  color: #4a90d9;
+  font-weight: 700;
+  width: 16px;
+  text-align: center;
+}
+
+#scorecard-root .scorecard-check-off {
+  width: 16px;
+  text-align: center;
+}
+
+#scorecard-root .scorecard-toolbar-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* ===== Buttons ===== */
+#scorecard-root .scorecard-btn {
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+#scorecard-root .scorecard-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#scorecard-root .scorecard-btn-primary {
+  background: #4a90d9;
+  color: #fff;
+  border-color: #4a90d9;
+}
+
+#scorecard-root .scorecard-btn-primary:hover:not(:disabled) {
+  background: #3a7bc8;
+}
+
+#scorecard-root .scorecard-btn-outline {
+  background: #fff;
+  color: #4a90d9;
+  border-color: #4a90d9;
+}
+
+#scorecard-root .scorecard-btn-outline:hover:not(:disabled) {
+  background: #4a90d9;
+  color: #fff;
+}
+
+#scorecard-root .scorecard-btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+#scorecard-root .scorecard-btn-danger {
+  background: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+}
+
+#scorecard-root .scorecard-btn-danger:hover:not(:disabled) {
+  background: #c82333;
+}
+
+/* ===== Warning / Error Banners ===== */
+#scorecard-root .scorecard-warning-banner {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+#scorecard-root .scorecard-error-banner {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 0 20px;
+  font-size: 13px;
+}
+
+/* ===== Empty State ===== */
+#scorecard-root .scorecard-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 15px;
+  z-index: 800;
+}
+
+/* ===== Loading Overlay ===== */
+#scorecard-root .scorecard-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+#scorecard-root .scorecard-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #4a90d9;
+  border-radius: 50%;
+  animation: scorecard-spin 0.8s linear infinite;
+}
+
+@keyframes scorecard-spin {
+  to { transform: rotate(360deg); }
+}
+
+#scorecard-root .scorecard-loading-text {
+  font-size: 13px;
+  color: #666;
+}
+
+#scorecard-root .scorecard-progress-bar-wrap {
+  width: 200px;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#scorecard-root .scorecard-progress-bar {
+  height: 100%;
+  background: #4a90d9;
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+/* ===== Tab Bar ===== */
+#scorecard-root .scorecard-tabs {
+  display: flex;
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 16px;
+}
+
+#scorecard-root .scorecard-tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-tab:hover {
+  color: #4a90d9;
+}
+
+#scorecard-root .scorecard-tab.active {
+  color: #4a90d9;
+  border-bottom-color: #4a90d9;
+}
+
+#scorecard-root .scorecard-tab-breadcrumb {
+  color: #999;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* ===== KPI Tiles ===== */
+#scorecard-root .scorecard-kpi-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+#scorecard-root .scorecard-kpi {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+#scorecard-root .scorecard-kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+}
+
+#scorecard-root .scorecard-kpi-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* ===== Risk Badges ===== */
+#scorecard-root .scorecard-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#scorecard-root .scorecard-badge-low {
+  background: #d4edda;
+  color: #155724;
+}
+
+#scorecard-root .scorecard-badge-mild {
+  background: #fff3cd;
+  color: #856404;
+}
+
+#scorecard-root .scorecard-badge-medium {
+  background: #ffe0cc;
+  color: #8a4500;
+}
+
+#scorecard-root .scorecard-badge-high {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+#scorecard-root .scorecard-badge-noActivity {
+  background: #e9ecef;
+  color: #495057;
+}
+
+/* ===== Charts Row ===== */
+#scorecard-root .scorecard-charts-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+#scorecard-root .scorecard-chart-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+#scorecard-root .scorecard-chart-card h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ===== Top/Bottom Tables ===== */
+#scorecard-root .scorecard-top-bottom {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+#scorecard-root .scorecard-top-bottom-card {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+#scorecard-root .scorecard-top-bottom-card h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+#scorecard-root .scorecard-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+#scorecard-root .scorecard-mini-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#scorecard-root .scorecard-mini-table tr:last-child td {
+  border-bottom: none;
+}
+
+#scorecard-root .scorecard-mini-rank {
+  color: #999;
+  width: 24px;
+  text-align: center;
+}
+
+#scorecard-root .scorecard-mini-name {
+  cursor: pointer;
+  color: #4a90d9;
+  font-weight: 600;
+}
+
+#scorecard-root .scorecard-mini-name:hover {
+  text-decoration: underline;
+}
+
+#scorecard-root .scorecard-mini-score {
+  text-align: right;
+  font-weight: 600;
+  width: 60px;
+}
+
+/* ===== Driver Table ===== */
+#scorecard-root .scorecard-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+#scorecard-root .scorecard-table-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#scorecard-root .scorecard-search {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  width: 200px;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-table-wrap {
+  overflow-x: auto;
+}
+
+#scorecard-root .scorecard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+#scorecard-root .scorecard-table th {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+  cursor: pointer;
+  z-index: 10;
+  user-select: none;
+}
+
+#scorecard-root .scorecard-table th:hover {
+  color: #4a90d9;
+}
+
+#scorecard-root .scorecard-table th .scorecard-sort-indicator {
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+#scorecard-root .scorecard-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+}
+
+#scorecard-root .scorecard-table tr:hover td {
+  background: #f0f4ff;
+}
+
+#scorecard-root .scorecard-driver-link {
+  color: #4a90d9;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#scorecard-root .scorecard-driver-link:hover {
+  text-decoration: underline;
+}
+
+#scorecard-root .scorecard-score-cell {
+  font-weight: 600;
+  text-align: right;
+}
+
+#scorecard-root .scorecard-rule-score-bar {
+  display: inline-block;
+  width: 40px;
+  height: 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ===== Pagination ===== */
+#scorecard-root .scorecard-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  font-size: 13px;
+}
+
+#scorecard-root .scorecard-page-btn {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-page-btn:disabled {
+  color: #aaa;
+  cursor: default;
+}
+
+#scorecard-root .scorecard-page-info {
+  color: #666;
+}
+
+/* ===== Detail Header ===== */
+#scorecard-root .scorecard-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+#scorecard-root .scorecard-back-btn {
+  background: none;
+  border: none;
+  color: #4a90d9;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-back-btn:hover {
+  text-decoration: underline;
+}
+
+#scorecard-root .scorecard-detail-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+#scorecard-root .scorecard-detail-period {
+  font-size: 13px;
+  color: #888;
+}
+
+#scorecard-root .scorecard-detail-score {
+  font-size: 24px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* ===== Detail Grid ===== */
+#scorecard-root .scorecard-detail-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+#scorecard-root .scorecard-detail-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ===== Gauge ===== */
+#scorecard-root .scorecard-gauge-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== Trend Controls ===== */
+#scorecard-root .scorecard-trend-controls {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+#scorecard-root .scorecard-trend-btn {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-trend-btn.active {
+  background: #4a90d9;
+  color: #fff;
+  border-color: #4a90d9;
+}
+
+/* ===== Settings Panel ===== */
+#scorecard-root .scorecard-settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 3000;
+}
+
+#scorecard-root .scorecard-settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  max-width: 90vw;
+  background: #fff;
+  z-index: 3001;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#scorecard-root .scorecard-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+#scorecard-root .scorecard-settings-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#scorecard-root .scorecard-settings-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+#scorecard-root .scorecard-settings-tabs {
+  display: flex;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0 20px;
+}
+
+#scorecard-root .scorecard-settings-tab {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-settings-tab.active {
+  color: #4a90d9;
+  border-bottom-color: #4a90d9;
+}
+
+#scorecard-root .scorecard-settings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+/* ===== Settings - Rules Tab ===== */
+#scorecard-root .scorecard-rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#scorecard-root .scorecard-rule-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+#scorecard-root .scorecard-rule-item.selected {
+  border-color: #4a90d9;
+  background: #f0f4ff;
+}
+
+#scorecard-root .scorecard-rule-checkbox {
+  flex-shrink: 0;
+}
+
+#scorecard-root .scorecard-rule-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#scorecard-root .scorecard-rule-weight {
+  width: 56px;
+  flex-shrink: 0;
+}
+
+#scorecard-root .scorecard-rule-weight input {
+  width: 100%;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: right;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-weight-sum {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#scorecard-root .scorecard-weight-sum.valid {
+  color: #28a745;
+}
+
+#scorecard-root .scorecard-weight-sum.invalid {
+  color: #dc3545;
+}
+
+#scorecard-root .scorecard-rule-search {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  margin-bottom: 10px;
+  font-family: inherit;
+}
+
+/* ===== Settings - Thresholds Tab ===== */
+#scorecard-root .scorecard-threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+#scorecard-root .scorecard-threshold-label {
+  width: 100px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#scorecard-root .scorecard-threshold-input {
+  width: 80px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: right;
+  font-family: inherit;
+}
+
+#scorecard-root .scorecard-threshold-desc {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ===== Settings - Colors Tab ===== */
+#scorecard-root .scorecard-color-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+#scorecard-root .scorecard-color-name {
+  flex: 1;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#scorecard-root .scorecard-color-input {
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ===== Settings - Saved Views Tab ===== */
+#scorecard-root .scorecard-saved-view-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+#scorecard-root .scorecard-saved-view-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+#scorecard-root .scorecard-saved-view-meta {
+  font-size: 11px;
+  color: #888;
+}
+
+#scorecard-root .scorecard-save-view-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#scorecard-root .scorecard-save-view-form input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+/* ===== Export Row ===== */
+#scorecard-root .scorecard-export-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
