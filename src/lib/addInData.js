@@ -14,7 +14,7 @@ export async function loadSettingsFromServer(api) {
 
     if (results && results.length > 0) {
       const record = results[0];
-      const settings = record.details ? JSON.parse(record.details) : null;
+      const settings = record.data ? JSON.parse(record.data) : null;
       return { id: record.id, settings };
     }
   } catch (err) {
@@ -31,7 +31,7 @@ export async function loadSettingsFromServer(api) {
 export async function saveSettingsToServer(api, settings, existingId) {
   const entity = {
     addInId: ADDIN_DATA_ID,
-    details: JSON.stringify(settings),
+    data: JSON.stringify(settings),
   };
 
   if (existingId) {

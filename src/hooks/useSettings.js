@@ -57,6 +57,7 @@ export function useSettings() {
   });
 
   const addInDataIdRef = useRef(null);
+  const settingsRef = useRef(settings);
 
   const updateSettings = useCallback((patch) => {
     setSettings((prev) => {
@@ -69,6 +70,7 @@ export function useSettings() {
         saveToStorage(VIEWS_STORAGE_KEY, next.savedViews);
       }
 
+      settingsRef.current = next;
       return next;
     });
   }, []);
@@ -83,23 +85,23 @@ export function useSettings() {
         merged.savedViews = prev.savedViews;
         const { savedViews, ...rest } = merged;
         saveToStorage(SETTINGS_STORAGE_KEY, rest);
+        settingsRef.current = merged;
         return merged;
       });
+      return true;
     }
+    return false;
   }, []);
 
   const syncToServer = useCallback(async (api) => {
     try {
-      setSettings((current) => {
-        // Extract settings to sync (exclude savedViews)
-        const { savedViews, ...toSync } = current;
-        saveSettingsToServer(api, toSync, addInDataIdRef.current).then(
-          (newId) => {
-            if (newId) addInDataIdRef.current = newId;
-          }
-        );
-        return current; // no state change
-      });
+      const { savedViews, ...toSync } = settingsRef.current;
+      const newId = await saveSettingsToServer(
+        api,
+        toSync,
+        addInDataIdRef.current
+      );
+      if (newId) addInDataIdRef.current = newId;
     } catch (err) {
       console.warn("Failed to sync settings to server:", err);
     }

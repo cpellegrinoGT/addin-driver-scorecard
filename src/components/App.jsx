@@ -13,7 +13,7 @@ import { useDataLoader } from "../hooks/useDataLoader.js";
 import { buildGroupMap, getDescendantIds } from "../lib/groupUtils.js";
 import { getDateRange } from "../lib/dateUtils.js";
 import { UNKNOWN_DRIVER_ID } from "../lib/constants.js";
-import { isDriveContext, getDriveCurrentDriver } from "../lib/driveUtils.js";
+import { isDriveContext } from "../lib/driveUtils.js";
 import Toolbar from "./Toolbar.jsx";
 import NavTabs from "./NavTabs.jsx";
 import LoadingOverlay from "./LoadingOverlay.jsx";
@@ -163,18 +163,28 @@ const App = forwardRef(function App(props, ref) {
       });
 
       // Sync settings from server (AddInData)
-      await syncFromServer(api);
+      const hadServerSettings = await syncFromServer(api);
 
-      // Detect Drive context
-      if (isDriveContext(api)) {
-        const driver = await getDriveCurrentDriver(api);
-        dispatch({ type: "SET_DRIVE_CONTEXT", driver });
+      // If no server settings existed yet, push local settings up
+      if (!hadServerSettings) {
+        await syncToServer(api);
+      }
+
+      // Detect Drive context — in Drive, pageState contains a device property
+      if (isDriveContext(pageState)) {
+        const filteredDrivers = (drivers || []).filter(
+          (d) => d.id !== UNKNOWN_DRIVER_ID
+        );
+        const currentDriver = filteredDrivers.find(
+          (d) => d.name === pageState.credentials?.userName
+        ) || currentUserArr?.[0] || null;
+        dispatch({ type: "SET_DRIVE_CONTEXT", driver: currentDriver });
       }
     } catch (err) {
       console.error("Foundation load error:", err);
       dispatch({ type: "SET_ERROR", error: "Failed to load foundation data." });
     }
-  }, [syncFromServer]);
+  }, [syncFromServer, syncToServer]);
 
   const handleApply = useCallback(async () => {
     if (!state._api) return;
