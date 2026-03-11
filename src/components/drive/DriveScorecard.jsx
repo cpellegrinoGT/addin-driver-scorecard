@@ -113,6 +113,26 @@ export default function DriveScorecard({
         <span className={`scorecard-badge scorecard-badge-${risk}`}>
           {riskLabel}
         </span>
+        {thresholds && (
+          <div className="drive-risk-legend">
+            <div className="drive-risk-legend-item">
+              <span className="drive-risk-dot" style={{ background: RISK_COLORS.low }} />
+              Low Risk: {thresholds.low}&ndash;100
+            </div>
+            <div className="drive-risk-legend-item">
+              <span className="drive-risk-dot" style={{ background: RISK_COLORS.mild }} />
+              Mild Risk: {thresholds.mild}&ndash;{thresholds.low - 1}
+            </div>
+            <div className="drive-risk-legend-item">
+              <span className="drive-risk-dot" style={{ background: RISK_COLORS.medium }} />
+              Medium Risk: {thresholds.medium}&ndash;{thresholds.mild - 1}
+            </div>
+            <div className="drive-risk-legend-item">
+              <span className="drive-risk-dot" style={{ background: RISK_COLORS.high }} />
+              High Risk: &lt;{thresholds.medium}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Card 2 — Behavior Ranks */}

@@ -1363,6 +1363,32 @@ html, body {
   min-height: 44px;
 }
 
+/* ===== Drive Risk Legend ===== */
+#scorecard-root.drive-mode .drive-risk-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: #666;
+}
+
+#scorecard-root.drive-mode .drive-risk-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+#scorecard-root.drive-mode .drive-risk-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 /* Rank bars in Drive need slightly more label space on small screens */
 #scorecard-root.drive-mode .sc-rank-label {
   width: 100px;
