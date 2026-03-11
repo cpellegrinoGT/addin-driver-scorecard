@@ -50,7 +50,8 @@ export async function fetchSafetyVehicleInsights(api, fromISO, toISO) {
  * @returns {{ summaryByEntity: Map, trendByEntity: Map }}
  *   summaryByEntity: Map<entityId, { crashProbabilityKm, crashProbabilityMile, overallSafetyRank,
  *     harshAccelerationRank, harshBrakingRank, harshCorneringRank, speedingRank, seatbeltRank,
- *     collisionCount, areaRiskClassification, isEnrolled }>
+ *     collisionCount, areaRiskClassification, crashProbabilityBenchmarkKm,
+ *     crashProbabilityBestInClassKm, predictedCrashes }>
  *   trendByEntity: Map<entityId, Array<{ date, overallSafetyRank, crashProbabilityKm }>>
  */
 export function aggregateSafetyInsights(records, entityMode) {
@@ -73,14 +74,14 @@ export function aggregateSafetyInsights(records, entityMode) {
   for (const [entityId, dailyRecords] of byEntity) {
     // Sort by date for trend
     dailyRecords.sort(
-      (a, b) => new Date(a.dateTime || a.date) - new Date(b.dateTime || b.date)
+      (a, b) => new Date(a.observationDate) - new Date(b.observationDate)
     );
 
     // Build trend array
     const trend = dailyRecords.map((r) => ({
-      date: (r.dateTime || r.date || "").slice(0, 10),
+      date: (r.observationDate || "").slice(0, 10),
       overallSafetyRank: r.overallSafetyRank ?? null,
-      crashProbabilityKm: r.crashProbabilityKm ?? null,
+      crashProbabilityKm: (r.crashProbabilityKm ?? r.crashProbabilityKM) ?? null,
     }));
     trendByEntity.set(entityId, trend);
 
@@ -92,7 +93,10 @@ export function aggregateSafetyInsights(records, entityMode) {
       sumBrake = 0,
       sumCornering = 0,
       sumSpeeding = 0,
-      sumSeatbelt = 0;
+      sumSeatbelt = 0,
+      sumBenchmarkKm = 0,
+      sumBestInClassKm = 0,
+      sumPredictedCrashes = 0;
     let countCrashKm = 0,
       countCrashMile = 0,
       countRank = 0,
@@ -100,14 +104,17 @@ export function aggregateSafetyInsights(records, entityMode) {
       countBrake = 0,
       countCornering = 0,
       countSpeeding = 0,
-      countSeatbelt = 0;
+      countSeatbelt = 0,
+      countBenchmarkKm = 0,
+      countBestInClassKm = 0,
+      countPredictedCrashes = 0;
     let totalCollisions = 0;
     const areaRiskCounts = {};
-    let isEnrolled = false;
 
     for (const r of dailyRecords) {
-      if (r.crashProbabilityKm != null) {
-        sumCrashKm += r.crashProbabilityKm;
+      const crashKm = r.crashProbabilityKm ?? r.crashProbabilityKM;
+      if (crashKm != null) {
+        sumCrashKm += crashKm;
         countCrashKm++;
       }
       if (r.crashProbabilityMile != null) {
@@ -134,8 +141,9 @@ export function aggregateSafetyInsights(records, entityMode) {
         sumSpeeding += r.speedingRank;
         countSpeeding++;
       }
-      if (r.seatbeltRank != null) {
-        sumSeatbelt += r.seatbeltRank;
+      const seatbelt = r.seatbeltRank ?? r.seatBeltRank;
+      if (seatbelt != null) {
+        sumSeatbelt += seatbelt;
         countSeatbelt++;
       }
       if (r.collisionCount != null) {
@@ -145,8 +153,19 @@ export function aggregateSafetyInsights(records, entityMode) {
         const key = r.areaRiskClassificationText;
         areaRiskCounts[key] = (areaRiskCounts[key] || 0) + 1;
       }
-      if (r.isEnrolled) {
-        isEnrolled = true;
+      const benchKm = r.crashProbabilityBenchmarkKm ?? r.crashProbabilityBenchmarkKM;
+      if (benchKm != null) {
+        sumBenchmarkKm += benchKm;
+        countBenchmarkKm++;
+      }
+      const bestKm = r.crashProbabilityBestInClassKm ?? r.crashProbabilityBestInClassKM;
+      if (bestKm != null) {
+        sumBestInClassKm += bestKm;
+        countBestInClassKm++;
+      }
+      if (r.predictedCrashes != null) {
+        sumPredictedCrashes += r.predictedCrashes;
+        countPredictedCrashes++;
       }
     }
 
@@ -173,7 +192,14 @@ export function aggregateSafetyInsights(records, entityMode) {
       seatbeltRank: countSeatbelt > 0 ? sumSeatbelt / countSeatbelt : null,
       collisionCount: totalCollisions,
       areaRiskClassification,
-      isEnrolled,
+      crashProbabilityBenchmarkKm:
+        countBenchmarkKm > 0 ? sumBenchmarkKm / countBenchmarkKm : null,
+      crashProbabilityBestInClassKm:
+        countBestInClassKm > 0 ? sumBestInClassKm / countBestInClassKm : null,
+      predictedCrashes:
+        countPredictedCrashes > 0
+          ? sumPredictedCrashes / countPredictedCrashes
+          : null,
     });
   }
 

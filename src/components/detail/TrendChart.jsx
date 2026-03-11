@@ -54,7 +54,10 @@ export default function TrendChart({ buckets, thresholds, safetyTrend }) {
       for (const d of safetyTrend) {
         safetyByDate[d.date] = d.overallSafetyRank;
       }
-      const safetyData = labels.map((label) => safetyByDate[label] ?? null);
+      const safetyData = labels.map((label) => {
+        const v = safetyByDate[label];
+        return v != null ? v * 100 : null;
+      });
       datasets.push({
         label: "Safety Rank",
         data: safetyData,
@@ -89,7 +92,8 @@ export default function TrendChart({ buckets, thresholds, safetyTrend }) {
     if (hasSafety) {
       scales.y2 = {
         position: "right",
-        beginAtZero: true,
+        min: 0,
+        max: 100,
         ticks: {
           font: { size: 11 },
           color: "#17a2b8",

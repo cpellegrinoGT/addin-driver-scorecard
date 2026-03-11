@@ -70,12 +70,12 @@ export default function DriverTableRow({
         <>
           <td style={{ textAlign: "right" }}>
             {scSummary?.overallSafetyRank != null
-              ? scSummary.overallSafetyRank.toFixed(0)
+              ? (scSummary.overallSafetyRank * 100).toFixed(0)
               : "-"}
           </td>
           <td style={{ textAlign: "right" }}>
             {scSummary?.crashProbabilityKm != null
-              ? Math.round(scSummary.crashProbabilityKm).toLocaleString()
+              ? (scSummary.crashProbabilityKm * 100).toFixed(1) + "%"
               : "-"}
           </td>
         </>

@@ -7,20 +7,18 @@ const BEHAVIOR_RANKS = [
 ];
 
 function rankColor(value) {
-  if (value >= 80) return "#28a745";
-  if (value >= 50) return "#ffc107";
+  if (value >= 0.80) return "#28a745";
+  if (value >= 0.50) return "#ffc107";
   return "#dc3545";
 }
 
 export default function SafetyRankPanel({ summary, isMetric }) {
-  if (!summary || !summary.isEnrolled) {
+  if (!summary) {
     return (
       <div className="scorecard-chart-card">
         <h3>Safety Center — Predictive Collision Risk</h3>
         <p style={{ color: "#aaa", fontSize: 13 }}>
-          {summary
-            ? "This driver is not enrolled in Safety Center."
-            : "No Safety Center data available."}
+          No Safety Center data available.
         </p>
       </div>
     );
@@ -38,16 +36,22 @@ export default function SafetyRankPanel({ summary, isMetric }) {
       <div className="sc-crash-grid">
         <div className="sc-crash-cell">
           <div className="sc-crash-value">
-            {crashProb != null ? Math.round(crashProb).toLocaleString() : "-"}
+            {crashProb != null ? (crashProb * 100).toFixed(1) + "%" : "-"}
           </div>
-          <div className="sc-crash-label">
-            Crash Probability ({unit})
-          </div>
+          <div className="sc-crash-label">Crash Probability</div>
+          {summary.crashProbabilityBenchmarkKm != null && (
+            <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+              Benchmark: {(summary.crashProbabilityBenchmarkKm * 100).toFixed(1)}%
+              {summary.crashProbabilityBestInClassKm != null && (
+                <> · Best: {(summary.crashProbabilityBestInClassKm * 100).toFixed(1)}%</>
+              )}
+            </div>
+          )}
         </div>
         <div className="sc-crash-cell">
           <div className="sc-crash-value">
             {summary.overallSafetyRank != null
-              ? summary.overallSafetyRank.toFixed(0)
+              ? (summary.overallSafetyRank * 100).toFixed(0)
               : "-"}
           </div>
           <div className="sc-crash-label">Safety Rank (percentile)</div>
@@ -58,6 +62,14 @@ export default function SafetyRankPanel({ summary, isMetric }) {
           </div>
           <div className="sc-crash-label">Collisions</div>
         </div>
+        {summary.predictedCrashes != null && (
+          <div className="sc-crash-cell">
+            <div className="sc-crash-value">
+              {summary.predictedCrashes.toFixed(1)}
+            </div>
+            <div className="sc-crash-label">Predicted Crashes (per 1M km)</div>
+          </div>
+        )}
       </div>
 
       <h4 style={{ fontSize: 13, fontWeight: 600, margin: "16px 0 8px" }}>
@@ -72,13 +84,13 @@ export default function SafetyRankPanel({ summary, isMetric }) {
               <div
                 className="sc-rank-fill"
                 style={{
-                  width: val != null ? `${val}%` : "0%",
+                  width: val != null ? `${val * 100}%` : "0%",
                   background: val != null ? rankColor(val) : "#e0e0e0",
                 }}
               />
             </div>
             <span className="sc-rank-value">
-              {val != null ? val.toFixed(0) : "-"}
+              {val != null ? (val * 100).toFixed(0) : "-"}
             </span>
           </div>
         );

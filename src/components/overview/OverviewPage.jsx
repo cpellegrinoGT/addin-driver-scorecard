@@ -40,7 +40,7 @@ export default function OverviewPage({
   let fleetCrashProbability = null;
   if (showSafety && safetyCenterData?.summaryByEntity) {
     const entries = [...safetyCenterData.summaryByEntity.values()].filter(
-      (s) => s.isEnrolled && s.crashProbabilityKm != null
+      (s) => s.crashProbabilityKm != null
     );
     if (entries.length > 0) {
       fleetCrashProbability =
