@@ -175,6 +175,12 @@ const App = forwardRef(function App(props, ref) {
         const filteredDrivers = (drivers || []).filter(
           (d) => d.id !== UNKNOWN_DRIVER_ID
         );
+
+        // DEBUG: log Drive identification values
+        console.log("[Scorecard Drive] pageState.credentials:", JSON.stringify(pageState?.credentials));
+        console.log("[Scorecard Drive] currentUser:", currentUser ? { id: currentUser.id, name: currentUser.name, firstName: currentUser.firstName, lastName: currentUser.lastName } : null);
+        console.log("[Scorecard Drive] filteredDrivers count:", filteredDrivers.length);
+
         // Match by id first (most reliable), then by name, then fall back
         // to the current user record from the credentials lookup
         const currentDriver = (currentUser && filteredDrivers.find(
@@ -182,6 +188,9 @@ const App = forwardRef(function App(props, ref) {
         )) || filteredDrivers.find(
           (d) => d.name === pageState.credentials?.userName
         ) || currentUser;
+
+        console.log("[Scorecard Drive] matched driver:", currentDriver ? { id: currentDriver.id, name: currentDriver.name, firstName: currentDriver.firstName, lastName: currentDriver.lastName } : null);
+
         dispatch({ type: "SET_DRIVE_CONTEXT", driver: currentDriver });
       }
     } catch (err) {
