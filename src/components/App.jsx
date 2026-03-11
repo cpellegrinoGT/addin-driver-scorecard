@@ -189,8 +189,8 @@ const App = forwardRef(function App(props, ref) {
       // Sync settings from server (AddInData)
       const hadServerSettings = await syncFromServer(api);
 
-      // If no server settings existed yet and user is admin, push local settings up
-      if (!hadServerSettings && isAdmin) {
+      // Admin: always re-save to keep broadcast groups in sync
+      if (isAdmin) {
         await syncToServer(api, groups || []);
       }
 
