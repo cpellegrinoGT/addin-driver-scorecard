@@ -169,14 +169,19 @@ const App = forwardRef(function App(props, ref) {
         await syncToServer(api);
       }
 
-      // Detect Drive context — flag set by shell.js based on addin registration name
+      // Detect Drive context — detected at runtime by shell.js
       if (isDriveContext()) {
+        const currentUser = currentUserArr?.[0] || null;
         const filteredDrivers = (drivers || []).filter(
           (d) => d.id !== UNKNOWN_DRIVER_ID
         );
-        const currentDriver = filteredDrivers.find(
+        // Match by id first (most reliable), then by name, then fall back
+        // to the current user record from the credentials lookup
+        const currentDriver = (currentUser && filteredDrivers.find(
+          (d) => d.id === currentUser.id
+        )) || filteredDrivers.find(
           (d) => d.name === pageState.credentials?.userName
-        ) || currentUserArr?.[0] || null;
+        ) || currentUser;
         dispatch({ type: "SET_DRIVE_CONTEXT", driver: currentDriver });
       }
     } catch (err) {
