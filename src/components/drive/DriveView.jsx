@@ -17,6 +17,7 @@ import { CHUNK_DAYS, RESULTS_LIMIT, DRIVE_CACHE_KEY } from "../../lib/constants.
 import DriveScorecard from "./DriveScorecard.jsx";
 import DriveOfflineBanner from "./DriveOfflineBanner.jsx";
 import DriveCachedBanner from "./DriveCachedBanner.jsx";
+import PullToRefresh from "./PullToRefresh.jsx";
 
 export default function DriveView({
   api,
@@ -316,22 +317,22 @@ export default function DriveView({
   }
 
   return (
-    <>
-    {cachedTimestamp && <DriveCachedBanner timestamp={cachedTimestamp} />}
-    <DriveScorecard
-      driverName={data.driverName}
-      totalScore={data.totalScore}
-      risk={data.risk}
-      safetySummary={data.safetySummary}
-      trendBuckets={data.trendBuckets}
-      fleetRank={data.fleetRank}
-      fleetTotal={data.fleetTotal}
-      thresholds={settings.thresholds}
-      onRefresh={() => loadDriveData()}
-      loading={loading}
-      dateRange={dateRange}
-      onDateRangeChange={handleDateRangeChange}
-    />
-    </>
+    <PullToRefresh onRefresh={() => loadDriveData()} loading={loading}>
+      {cachedTimestamp && <DriveCachedBanner timestamp={cachedTimestamp} />}
+      <DriveScorecard
+        driverName={data.driverName}
+        totalScore={data.totalScore}
+        risk={data.risk}
+        safetySummary={data.safetySummary}
+        trendBuckets={data.trendBuckets}
+        fleetRank={data.fleetRank}
+        fleetTotal={data.fleetTotal}
+        thresholds={settings.thresholds}
+        onRefresh={() => loadDriveData()}
+        loading={loading}
+        dateRange={dateRange}
+        onDateRangeChange={handleDateRangeChange}
+      />
+    </PullToRefresh>
   );
 }

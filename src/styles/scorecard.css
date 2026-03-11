@@ -1506,3 +1506,27 @@ html, body {
   bottom: 100%;
   margin-bottom: 8px;
 }
+
+/* ===== Drive Pull-to-Refresh ===== */
+#scorecard-root.drive-mode .drive-pull-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#scorecard-root.drive-mode .drive-pull-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#scorecard-root.drive-mode .drive-pull-arrow {
+  font-size: 20px;
+  color: #888;
+  transition: transform 0.2s;
+}
+
+#scorecard-root.drive-mode .drive-pull-arrow.ready {
+  transform: rotate(180deg);
+  color: #4a90d9;
+}
