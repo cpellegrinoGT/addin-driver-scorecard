@@ -93,14 +93,13 @@ export function useSettings() {
     return false;
   }, []);
 
-  const syncToServer = useCallback(async (api, allGroups) => {
+  const syncToServer = useCallback(async (api) => {
     try {
       const { savedViews, ...toSync } = settingsRef.current;
       const newId = await saveSettingsToServer(
         api,
         toSync,
-        addInDataIdRef.current,
-        allGroups
+        addInDataIdRef.current
       );
       if (newId) addInDataIdRef.current = newId;
     } catch (err) {

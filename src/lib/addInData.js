@@ -1,8 +1,5 @@
 import { apiCall } from "../hooks/useGeotabApi.js";
 import { ADDIN_DATA_ID } from "./constants.js";
-import { getSortedGroups } from "./groupUtils.js";
-
-const COMPANY_GROUP = { id: "GroupCompanyId" };
 
 /**
  * Load settings from AddInData on the server.
@@ -14,8 +11,6 @@ export async function loadSettingsFromServer(api) {
       typeName: "AddInData",
       search: { addInId: ADDIN_DATA_ID },
     });
-
-    console.log("[AddInData] loadSettingsFromServer results:", results?.length ?? 0, results?.[0]?.groups);
 
     if (results && results.length > 0) {
       const record = results[0];
@@ -31,34 +26,22 @@ export async function loadSettingsFromServer(api) {
 /**
  * Save settings to AddInData on the server.
  * Uses "Set" if existingId is provided, otherwise "Add".
- * Tags the record with all org groups so users at any scope level can read it.
+ * Uses empty groups array so any user can read the record regardless of scope.
  * Returns the record id.
  */
-export async function saveSettingsToServer(api, settings, existingId, allGroups) {
-  const broadcastGroups = [
-    COMPANY_GROUP,
-    ...getSortedGroups(allGroups || []).map((g) => ({ id: g.id })),
-  ];
-
-  console.log("[AddInData] saveSettingsToServer — existingId:", existingId, "broadcastGroups:", broadcastGroups.length);
-
-  // Remove the old record first so we can re-create with updated groups.
-  // Set may not update the groups field on an existing AddInData record.
-  if (existingId) {
-    try {
-      await apiCall(api, "Remove", { typeName: "AddInData", entity: { id: existingId } });
-    } catch (err) {
-      console.warn("[AddInData] Remove failed (may not exist):", err);
-    }
-  }
-
+export async function saveSettingsToServer(api, settings, existingId) {
   const entity = {
     addInId: ADDIN_DATA_ID,
     data: JSON.stringify(settings),
-    groups: broadcastGroups,
+    groups: [],
   };
 
+  if (existingId) {
+    entity.id = existingId;
+    await apiCall(api, "Set", { typeName: "AddInData", entity });
+    return existingId;
+  }
+
   const newId = await apiCall(api, "Add", { typeName: "AddInData", entity });
-  console.log("[AddInData] Added new record:", newId);
   return newId;
 }

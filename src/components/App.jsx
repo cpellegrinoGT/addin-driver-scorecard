@@ -189,9 +189,9 @@ const App = forwardRef(function App(props, ref) {
       // Sync settings from server (AddInData)
       const hadServerSettings = await syncFromServer(api);
 
-      // Admin: always re-save to keep broadcast groups in sync
-      if (isAdmin) {
-        await syncToServer(api, groups || []);
+      // If no server settings existed yet and user is admin, push local defaults up
+      if (!hadServerSettings && isAdmin) {
+        await syncToServer(api);
       }
 
       // Detect Drive context — detected at runtime by shell.js
@@ -290,7 +290,7 @@ const App = forwardRef(function App(props, ref) {
   useEffect(() => {
     if (state._api && !state.isDrive && state.isAdmin && prevSettingsRef.current !== settings) {
       prevSettingsRef.current = settings;
-      syncToServer(state._api, state.allGroups);
+      syncToServer(state._api);
     }
   }, [settings, state._api, state.isDrive, state.isAdmin, syncToServer]);
 
