@@ -129,15 +129,23 @@ const App = forwardRef(function App(props, ref) {
         ]),
       ]);
 
-      const [currentUserArr] = await apiMultiCall(api, [
-        [
-          "Get",
-          {
-            typeName: "User",
-            search: { name: pageState.credentials?.userName },
-          },
-        ],
-      ]);
+      // Resolve the logged-in user's name. In MyGeotab, pageState.credentials
+      // has it; in Drive, credentials is undefined so fall back to api.getSession.
+      let sessionUserName = pageState.credentials?.userName;
+      if (!sessionUserName && typeof api.getSession === "function") {
+        try {
+          const session = await new Promise((resolve) => api.getSession(resolve));
+          sessionUserName = session?.userName;
+        } catch (e) {
+          console.warn("api.getSession failed:", e);
+        }
+      }
+
+      const [currentUserArr] = sessionUserName
+        ? await apiMultiCall(api, [
+            ["Get", { typeName: "User", search: { name: sessionUserName } }],
+          ])
+        : [[]];
       const isMetric = currentUserArr?.[0]?.isMetric ?? false;
 
       const now = new Date();
@@ -176,20 +184,13 @@ const App = forwardRef(function App(props, ref) {
           (d) => d.id !== UNKNOWN_DRIVER_ID
         );
 
-        // DEBUG: log Drive identification values
-        console.log("[Scorecard Drive] pageState.credentials:", JSON.stringify(pageState?.credentials));
-        console.log("[Scorecard Drive] currentUser:", currentUser ? { id: currentUser.id, name: currentUser.name, firstName: currentUser.firstName, lastName: currentUser.lastName } : null);
-        console.log("[Scorecard Drive] filteredDrivers count:", filteredDrivers.length);
-
         // Match by id first (most reliable), then by name, then fall back
         // to the current user record from the credentials lookup
         const currentDriver = (currentUser && filteredDrivers.find(
           (d) => d.id === currentUser.id
         )) || filteredDrivers.find(
-          (d) => d.name === pageState.credentials?.userName
+          (d) => d.name === sessionUserName
         ) || currentUser;
-
-        console.log("[Scorecard Drive] matched driver:", currentDriver ? { id: currentDriver.id, name: currentDriver.name, firstName: currentDriver.firstName, lastName: currentDriver.lastName } : null);
 
         dispatch({ type: "SET_DRIVE_CONTEXT", driver: currentDriver });
       }
