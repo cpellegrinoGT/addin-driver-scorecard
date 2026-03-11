@@ -135,7 +135,33 @@ export default function DriveScorecard({
         </div>
       )}
 
-      {/* Card 3 — Crash Probability */}
+      {/* Card 3 — Score Trend */}
+      {trendBuckets && trendBuckets.length > 0 && (
+        <div className="drive-card">
+          <div className="drive-card-title">Score Trend (Last 7 Days)</div>
+          <div style={{ height: 100 }}>
+            <canvas ref={canvasRef} />
+          </div>
+        </div>
+      )}
+
+      {/* Card 4 — Fleet Ranking */}
+      {fleetRank != null && fleetTotal != null && (
+        <div className="drive-card">
+          <div className="drive-card-title">Fleet Ranking</div>
+          <div className="drive-fleet-rank">
+            You rank <strong>#{fleetRank}</strong> out of{" "}
+            <strong>{fleetTotal}</strong> drivers
+          </div>
+          {fleetTotal > 0 && (
+            <div className="drive-fleet-percentile">
+              Top {Math.max(1, Math.round((fleetRank / fleetTotal) * 100))}%
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Card 5 — Crash Probability */}
       {safetySummary && safetySummary.crashProbabilityKm != null && (
         <div className="drive-card">
           <div className="drive-card-title">Crash Probability</div>
@@ -167,32 +193,6 @@ export default function DriveScorecard({
             <div className="drive-crash-predicted">
               {safetySummary.predictedCrashes.toFixed(1)} predicted crashes per
               1M km
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Card 4 — Score Trend */}
-      {trendBuckets && trendBuckets.length > 0 && (
-        <div className="drive-card">
-          <div className="drive-card-title">Score Trend (Last 7 Days)</div>
-          <div style={{ height: 100 }}>
-            <canvas ref={canvasRef} />
-          </div>
-        </div>
-      )}
-
-      {/* Card 5 — Fleet Ranking */}
-      {fleetRank != null && fleetTotal != null && (
-        <div className="drive-card">
-          <div className="drive-card-title">Fleet Ranking</div>
-          <div className="drive-fleet-rank">
-            You rank <strong>#{fleetRank}</strong> out of{" "}
-            <strong>{fleetTotal}</strong> drivers
-          </div>
-          {fleetTotal > 0 && (
-            <div className="drive-fleet-percentile">
-              Top {Math.max(1, Math.round((fleetRank / fleetTotal) * 100))}%
             </div>
           )}
         </div>
