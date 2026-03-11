@@ -18,6 +18,7 @@ export default function SettingsPanel({
   onUpdate,
   allRules,
   safetyCenterAvailable,
+  isAdmin = true,
   onClose,
 }) {
   const [activeTab, setActiveTab] = useState("general");
@@ -36,6 +37,12 @@ export default function SettingsPanel({
           </button>
         </div>
 
+        {!isAdmin && (
+          <div className="scorecard-settings-readonly-notice">
+            Settings are managed by your administrator.
+          </div>
+        )}
+
         <div className="scorecard-settings-tabs">
           {TABS.map((tab) => (
             <button
@@ -50,33 +57,39 @@ export default function SettingsPanel({
           ))}
         </div>
 
-        <div className="scorecard-settings-body">
+        <div className={`scorecard-settings-body ${!isAdmin ? "settings-readonly" : ""}`}>
           {activeTab === "general" && (
             <GeneralTab
               settings={settings}
-              onUpdate={onUpdate}
+              onUpdate={isAdmin ? onUpdate : () => {}}
               safetyCenterAvailable={safetyCenterAvailable}
             />
           )}
           {activeTab === "rules" && (
             <RulesTab
               settings={settings}
-              onUpdate={onUpdate}
+              onUpdate={isAdmin ? onUpdate : () => {}}
               allRules={allRules}
             />
           )}
           {activeTab === "thresholds" && (
-            <ThresholdsTab settings={settings} onUpdate={onUpdate} />
+            <ThresholdsTab
+              settings={settings}
+              onUpdate={isAdmin ? onUpdate : () => {}}
+            />
           )}
           {activeTab === "colors" && (
             <ColorsTab
               settings={settings}
-              onUpdate={onUpdate}
+              onUpdate={isAdmin ? onUpdate : () => {}}
               allRules={allRules}
             />
           )}
           {activeTab === "views" && (
-            <SavedViewsTab settings={settings} onUpdate={onUpdate} />
+            <SavedViewsTab
+              settings={settings}
+              onUpdate={isAdmin ? onUpdate : () => {}}
+            />
           )}
         </div>
       </div>

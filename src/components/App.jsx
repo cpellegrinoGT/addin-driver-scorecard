@@ -55,6 +55,9 @@ const initialState = {
   isDrive: false,
   driveDriver: null,
   driveOnline: true,
+
+  // Admin state
+  isAdmin: true, // default true until determined
 };
 
 function reducer(state, action) {
@@ -104,6 +107,8 @@ function reducer(state, action) {
       };
     case "SET_DRIVE_ONLINE":
       return { ...state, driveOnline: action.online };
+    case "SET_ADMIN":
+      return { ...state, isAdmin: action.isAdmin };
     default:
       return state;
   }
@@ -146,7 +151,19 @@ const App = forwardRef(function App(props, ref) {
             ["Get", { typeName: "User", search: { name: sessionUserName } }],
           ])
         : [[]];
-      const isMetric = currentUserArr?.[0]?.isMetric ?? false;
+      const currentUser = currentUserArr?.[0] || null;
+      const isMetric = currentUser?.isMetric ?? false;
+
+      // Determine admin status from security groups
+      const ADMIN_GROUP_IDS = [
+        "GroupEverythingSecurityId",
+        "GroupSupervisorsSecurityId",
+      ];
+      const userGroups = currentUser?.securityGroups || [];
+      const isAdmin = userGroups.some((g) =>
+        ADMIN_GROUP_IDS.includes(g.id)
+      );
+      dispatch({ type: "SET_ADMIN", isAdmin });
 
       const now = new Date();
       const sevenAgo = new Date(now);
@@ -172,14 +189,13 @@ const App = forwardRef(function App(props, ref) {
       // Sync settings from server (AddInData)
       const hadServerSettings = await syncFromServer(api);
 
-      // If no server settings existed yet, push local settings up
-      if (!hadServerSettings) {
+      // If no server settings existed yet and user is admin, push local settings up
+      if (!hadServerSettings && isAdmin) {
         await syncToServer(api);
       }
 
       // Detect Drive context — detected at runtime by shell.js
       if (isDriveContext()) {
-        const currentUser = currentUserArr?.[0] || null;
         const filteredDrivers = (drivers || []).filter(
           (d) => d.id !== UNKNOWN_DRIVER_ID
         );
@@ -269,14 +285,14 @@ const App = forwardRef(function App(props, ref) {
     }
   }, [state._api, state.fromDate, state.toDate, state.selectedGroupIds, state.allDrivers, state.allDevices, state.allGroups, settings, loadData]);
 
-  // Sync settings to server when they change (MyGeotab only)
+  // Sync settings to server when they change (MyGeotab only, admin only)
   const prevSettingsRef = useRef(settings);
   useEffect(() => {
-    if (state._api && !state.isDrive && prevSettingsRef.current !== settings) {
+    if (state._api && !state.isDrive && state.isAdmin && prevSettingsRef.current !== settings) {
       prevSettingsRef.current = settings;
       syncToServer(state._api);
     }
-  }, [settings, state._api, state.isDrive, syncToServer]);
+  }, [settings, state._api, state.isDrive, state.isAdmin, syncToServer]);
 
   useImperativeHandle(
     ref,
@@ -483,6 +499,7 @@ const App = forwardRef(function App(props, ref) {
             onUpdate={updateSettings}
             allRules={state.allRules}
             safetyCenterAvailable={state.safetyCenterAvailable}
+            isAdmin={state.isAdmin}
             onClose={() =>
               dispatch({ type: "SET_SETTINGS_OPEN", open: false })
             }

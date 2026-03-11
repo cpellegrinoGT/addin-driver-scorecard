@@ -780,6 +780,21 @@ html, body {
   padding: 16px 20px;
 }
 
+/* ===== Settings - Read-Only Notice ===== */
+#scorecard-root .scorecard-settings-readonly-notice {
+  background: #fff3cd;
+  color: #856404;
+  border-bottom: 1px solid #ffc107;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#scorecard-root .settings-readonly {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
 /* ===== Settings - Rules Tab ===== */
 #scorecard-root .scorecard-rule-list {
   display: flex;
