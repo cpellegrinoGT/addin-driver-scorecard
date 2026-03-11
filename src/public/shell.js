@@ -14,7 +14,7 @@
     window.__scorecardReady(window.__scorecardImpl);
   }
 
-  geotab.addin.driverScorecard = function () {
+  var addinFactory = function () {
     return {
       initialize: function (api, state, callback) {
         if (ready) { pending.initialize(api, state, callback); }
@@ -30,4 +30,7 @@
       }
     };
   };
+
+  geotab.addin.driverScorecard = addinFactory;
+  geotab.addin.driverScorecardDriveAppLink = addinFactory;
 })();

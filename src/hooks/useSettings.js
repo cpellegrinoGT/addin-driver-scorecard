@@ -1,10 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   DEFAULT_THRESHOLDS,
   RULE_PALETTE,
   SETTINGS_STORAGE_KEY,
   VIEWS_STORAGE_KEY,
 } from "../lib/constants.js";
+import {
+  loadSettingsFromServer,
+  saveSettingsToServer,
+} from "../lib/addInData.js";
 
 export const DEFAULT_SETTINGS = {
   selectedRuleIds: [],
@@ -14,6 +18,7 @@ export const DEFAULT_SETTINGS = {
   savedViews: [],
   entityMode: "drivers", // "drivers" | "assets"
   showSafety: true,
+  driveEnabled: false,
 };
 
 function loadFromStorage(key, fallback) {
@@ -45,10 +50,13 @@ export function useSettings() {
         savedViews: loadFromStorage(VIEWS_STORAGE_KEY, []),
         entityMode: stored.entityMode || "drivers",
         showSafety: stored.showSafety !== undefined ? stored.showSafety : true,
+        driveEnabled: stored.driveEnabled || false,
       };
     }
     return { ...DEFAULT_SETTINGS };
   });
+
+  const addInDataIdRef = useRef(null);
 
   const updateSettings = useCallback((patch) => {
     setSettings((prev) => {
@@ -65,7 +73,39 @@ export function useSettings() {
     });
   }, []);
 
-  return [settings, updateSettings];
+  const syncFromServer = useCallback(async (api) => {
+    const { id, settings: serverSettings } = await loadSettingsFromServer(api);
+    if (id) addInDataIdRef.current = id;
+    if (serverSettings) {
+      setSettings((prev) => {
+        const merged = { ...prev, ...serverSettings };
+        // Restore savedViews from localStorage — they're not stored in AddInData
+        merged.savedViews = prev.savedViews;
+        const { savedViews, ...rest } = merged;
+        saveToStorage(SETTINGS_STORAGE_KEY, rest);
+        return merged;
+      });
+    }
+  }, []);
+
+  const syncToServer = useCallback(async (api) => {
+    try {
+      setSettings((current) => {
+        // Extract settings to sync (exclude savedViews)
+        const { savedViews, ...toSync } = current;
+        saveSettingsToServer(api, toSync, addInDataIdRef.current).then(
+          (newId) => {
+            if (newId) addInDataIdRef.current = newId;
+          }
+        );
+        return current; // no state change
+      });
+    } catch (err) {
+      console.warn("Failed to sync settings to server:", err);
+    }
+  }, []);
+
+  return [settings, updateSettings, syncFromServer, syncToServer];
 }
 
 export function assignDefaultColors(ruleIds, existingColors) {

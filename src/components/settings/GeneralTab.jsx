@@ -60,6 +60,32 @@ export default function GeneralTab({ settings, onUpdate, safetyCenterAvailable }
           </p>
         )}
       </div>
+
+      <div className="scorecard-settings-section" style={{ marginTop: 24 }}>
+        <h4>Geotab Drive</h4>
+        <p style={{ fontSize: 12, color: "#888", marginBottom: 12 }}>
+          Enable the Driver Scorecard in the Geotab Drive mobile app for your
+          drivers.
+        </p>
+        <div className="scorecard-entity-toggle">
+          <button
+            className={`scorecard-entity-btn ${
+              settings.driveEnabled ? "active" : ""
+            }`}
+            onClick={() => onUpdate({ driveEnabled: true })}
+          >
+            Enable
+          </button>
+          <button
+            className={`scorecard-entity-btn ${
+              !settings.driveEnabled ? "active" : ""
+            }`}
+            onClick={() => onUpdate({ driveEnabled: false })}
+          >
+            Disable
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

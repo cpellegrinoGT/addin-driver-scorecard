@@ -4,6 +4,7 @@ import {
   useReducer,
   useCallback,
   useRef,
+  useEffect,
 } from "react";
 import GeotabContext from "../context/GeotabContext.js";
 import { apiCall, apiMultiCall } from "../hooks/useGeotabApi.js";
@@ -12,12 +13,14 @@ import { useDataLoader } from "../hooks/useDataLoader.js";
 import { buildGroupMap, getDescendantIds } from "../lib/groupUtils.js";
 import { getDateRange } from "../lib/dateUtils.js";
 import { UNKNOWN_DRIVER_ID } from "../lib/constants.js";
+import { isDriveContext, getDriveCurrentDriver } from "../lib/driveUtils.js";
 import Toolbar from "./Toolbar.jsx";
 import NavTabs from "./NavTabs.jsx";
 import LoadingOverlay from "./LoadingOverlay.jsx";
 import OverviewPage from "./overview/OverviewPage.jsx";
 import DetailPage from "./detail/DetailPage.jsx";
 import SettingsPanel from "./settings/SettingsPanel.jsx";
+import DriveView from "./drive/DriveView.jsx";
 import "@geotab/zenith/dist/index.css";
 import "../styles/scorecard.css";
 import "../styles/print.css";
@@ -48,6 +51,11 @@ const initialState = {
 
   scorecardData: null,
   safetyCenterAvailable: false,
+
+  // Drive app state
+  isDrive: false,
+  driveDriver: null,
+  driveOnline: true,
 };
 
 function reducer(state, action) {
@@ -89,6 +97,14 @@ function reducer(state, action) {
       };
     case "SET_ERROR":
       return { ...state, error: action.error, loading: false };
+    case "SET_DRIVE_CONTEXT":
+      return {
+        ...state,
+        isDrive: true,
+        driveDriver: action.driver,
+      };
+    case "SET_DRIVE_ONLINE":
+      return { ...state, driveOnline: action.online };
     default:
       return state;
   }
@@ -96,9 +112,11 @@ function reducer(state, action) {
 
 const App = forwardRef(function App(props, ref) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [settings, updateSettings] = useSettings();
+  const [settings, updateSettings, syncFromServer, syncToServer] =
+    useSettings();
   const { loadData, abort } = useDataLoader();
   const rawDataRef = useRef(null);
+  const driveRefreshRef = useRef(null);
 
   const initializeFoundation = useCallback(async (api, pageState) => {
     dispatch({ type: "SET_API", api, pageState });
@@ -143,11 +161,20 @@ const App = forwardRef(function App(props, ref) {
           toDate: now.toISOString().slice(0, 10),
         },
       });
+
+      // Sync settings from server (AddInData)
+      await syncFromServer(api);
+
+      // Detect Drive context
+      if (isDriveContext(api)) {
+        const driver = await getDriveCurrentDriver(api);
+        dispatch({ type: "SET_DRIVE_CONTEXT", driver });
+      }
     } catch (err) {
       console.error("Foundation load error:", err);
       dispatch({ type: "SET_ERROR", error: "Failed to load foundation data." });
     }
-  }, []);
+  }, [syncFromServer]);
 
   const handleApply = useCallback(async () => {
     if (!state._api) return;
@@ -218,21 +245,76 @@ const App = forwardRef(function App(props, ref) {
     }
   }, [state._api, state.fromDate, state.toDate, state.selectedGroupIds, state.allDrivers, state.allDevices, state.allGroups, settings, loadData]);
 
+  // Sync settings to server when they change (MyGeotab only)
+  const prevSettingsRef = useRef(settings);
+  useEffect(() => {
+    if (state._api && !state.isDrive && prevSettingsRef.current !== settings) {
+      prevSettingsRef.current = settings;
+      syncToServer(state._api);
+    }
+  }, [settings, state._api, state.isDrive, syncToServer]);
+
   useImperativeHandle(
     ref,
     () => ({
+      isDrive: state.isDrive,
       initializeFoundation,
       updateApi(api, pageState) {
         dispatch({ type: "SET_API", api, pageState });
+        // Update online state from pageState in Drive
+        if (state.isDrive && pageState) {
+          dispatch({
+            type: "SET_DRIVE_ONLINE",
+            online: pageState.online !== false,
+          });
+        }
+      },
+      refreshDriveData() {
+        if (driveRefreshRef.current) driveRefreshRef.current();
       },
       abort() {
         abort();
         dispatch({ type: "SET_LOADING", loading: false });
       },
     }),
-    [initializeFoundation, abort]
+    [initializeFoundation, abort, state.isDrive]
   );
 
+  // Add drive-mode class to root element
+  useEffect(() => {
+    const root = document.getElementById("scorecard-root");
+    if (root) {
+      if (state.isDrive) {
+        root.classList.add("drive-mode");
+      } else {
+        root.classList.remove("drive-mode");
+      }
+    }
+  }, [state.isDrive]);
+
+  // Drive app render
+  if (state.isDrive) {
+    return (
+      <GeotabContext.Provider
+        value={{ api: state._api, pageState: state._pageState }}
+      >
+        <DriveView
+          api={state._api}
+          driveDriver={state.driveDriver}
+          online={state.driveOnline}
+          settings={settings}
+          allDrivers={state.allDrivers}
+          allDevices={state.allDevices}
+          isMetric={state.isMetric}
+          onRegisterRefresh={(fn) => {
+            driveRefreshRef.current = fn;
+          }}
+        />
+      </GeotabContext.Provider>
+    );
+  }
+
+  // MyGeotab render (unchanged)
   const entityLabel = settings.entityMode === "assets" ? "Asset" : "Driver";
 
   const driverMap = {};

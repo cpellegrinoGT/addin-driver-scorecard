@@ -1,12 +1,18 @@
 {
   "name": "Driver Safety Scorecard",
   "supportEmail": "christopherpellegrino@geotab.com",
-  "version": "1.0",
+  "version": "1.1",
   "items": [
     {
       "url": "https://cpellegrinoGT.github.io/addin-driver-scorecard/scorecard.html",
       "path": "ActivityLink/",
       "menuName": { "en": "Driver Scorecard" },
+      "svgIcon": "https://cpellegrinoGT.github.io/addin-driver-scorecard/images/icon.svg"
+    },
+    {
+      "url": "https://cpellegrinoGT.github.io/addin-driver-scorecard/scorecard.html",
+      "path": "DriveAppLink/",
+      "menuName": { "en": "My Scorecard" },
       "svgIcon": "https://cpellegrinoGT.github.io/addin-driver-scorecard/images/icon.svg"
     }
   ],

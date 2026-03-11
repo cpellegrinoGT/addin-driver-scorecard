@@ -1192,3 +1192,167 @@ html, body {
   color: #333;
   flex-shrink: 0;
 }
+
+/* ===== Drive App Styles ===== */
+#scorecard-root.drive-mode {
+  background: #f5f6f8;
+  min-height: 100vh;
+}
+
+#scorecard-root.drive-mode .drive-scorecard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+#scorecard-root.drive-mode .drive-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+#scorecard-root.drive-mode .drive-card-driver-name {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+#scorecard-root.drive-mode .drive-card-score {
+  text-align: center;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+#scorecard-root.drive-mode .drive-card .scorecard-badge {
+  display: block;
+  text-align: center;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+#scorecard-root.drive-mode .drive-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+#scorecard-root.drive-mode .drive-crash-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#scorecard-root.drive-mode .drive-crash-stat {
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
+}
+
+#scorecard-root.drive-mode .drive-crash-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+#scorecard-root.drive-mode .drive-crash-label {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
+#scorecard-root.drive-mode .drive-crash-predicted {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+#scorecard-root.drive-mode .drive-fleet-rank {
+  font-size: 16px;
+  text-align: center;
+  color: #333;
+}
+
+#scorecard-root.drive-mode .drive-fleet-percentile {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+  margin-top: 4px;
+}
+
+#scorecard-root.drive-mode .drive-refresh-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  border-radius: 10px;
+  min-height: 44px;
+}
+
+#scorecard-root.drive-mode .drive-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 12px;
+}
+
+#scorecard-root.drive-mode .drive-disabled-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 32px;
+  text-align: center;
+  color: #888;
+  font-size: 15px;
+}
+
+#scorecard-root.drive-mode .drive-disabled-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+#scorecard-root.drive-mode .drive-offline-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 32px;
+  text-align: center;
+}
+
+#scorecard-root.drive-mode .drive-offline-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+#scorecard-root.drive-mode .drive-offline-text {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+
+/* Ensure touch targets are large enough in Drive */
+#scorecard-root.drive-mode .scorecard-btn {
+  min-height: 44px;
+}
+
+/* Rank bars in Drive need slightly more label space on small screens */
+#scorecard-root.drive-mode .sc-rank-label {
+  width: 100px;
+  font-size: 12px;
+}

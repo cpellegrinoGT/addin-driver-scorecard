@@ -31,7 +31,12 @@ const impl = {
 
   focus(freshApi, state) {
     if (appRef.current) appRef.current.updateApi(freshApi, state);
-    if (firstFocus) {
+
+    if (appRef.current?.isDrive) {
+      // In Drive, trigger a data refresh on each focus
+      appRef.current.refreshDriveData?.();
+    } else if (firstFocus) {
+      // In MyGeotab, auto-click Apply on first focus
       firstFocus = false;
       setTimeout(() => document.getElementById("scorecard-apply")?.click(), 500);
     }

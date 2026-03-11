@@ -45,3 +45,5 @@ export const RULE_PALETTE = [
 
 export const SETTINGS_STORAGE_KEY = "driverScorecard_settings";
 export const VIEWS_STORAGE_KEY = "driverScorecard_savedViews";
+
+export const ADDIN_DATA_ID = "driverScorecard";
