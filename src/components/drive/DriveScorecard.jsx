@@ -98,6 +98,26 @@ export default function DriveScorecard({
   const scoreColor = RISK_COLORS[risk] || RISK_COLORS.noActivity;
   const riskLabel = RISK_LABELS[risk] || "No Activity";
 
+  // Compute trend direction from trendBuckets
+  let trendArrow = null;
+  if (trendBuckets && trendBuckets.length >= 2) {
+    const scored = trendBuckets.filter((b) => b.totalScore != null);
+    if (scored.length >= 2) {
+      const mid = Math.floor(scored.length / 2);
+      const firstHalf = scored.slice(0, mid);
+      const secondHalf = scored.slice(mid);
+      const avg = (arr) => arr.reduce((s, b) => s + b.totalScore, 0) / arr.length;
+      const diff = avg(secondHalf) - avg(firstHalf);
+      if (diff > 2) {
+        trendArrow = { symbol: "\u2191", color: "#28a745", label: "Trending up" };
+      } else if (diff < -2) {
+        trendArrow = { symbol: "\u2193", color: "#dc3545", label: "Trending down" };
+      } else {
+        trendArrow = { symbol: "\u2014", color: "#888", label: "Stable" };
+      }
+    }
+  }
+
   return (
     <div className="drive-scorecard">
       {/* Date Range Toggle */}
@@ -131,6 +151,15 @@ export default function DriveScorecard({
         </div>
         <div className="drive-card-score" style={{ color: scoreColor }}>
           {totalScore != null ? Math.round(totalScore) : "-"}
+          {trendArrow && (
+            <span
+              className="drive-trend-arrow"
+              style={{ color: trendArrow.color }}
+              title={trendArrow.label}
+            >
+              {trendArrow.symbol}
+            </span>
+          )}
         </div>
         <span className={`scorecard-badge scorecard-badge-${risk}`}>
           {riskLabel}
