@@ -1069,6 +1069,26 @@ html, body {
   display: block;
 }
 
+/* Info tooltips inside table headers */
+#scorecard-root .scorecard-table th .scorecard-info-wrap {
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+#scorecard-root .scorecard-table th .scorecard-info-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+}
+
+#scorecard-root .scorecard-table th .scorecard-info-tooltip {
+  width: 260px;
+  z-index: 1500;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
 /* ===== Export Row ===== */
 #scorecard-root .scorecard-export-row {
   display: flex;

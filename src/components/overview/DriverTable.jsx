@@ -178,12 +178,27 @@ export default function DriverTable({
                 <>
                   <th onClick={() => handleSort("sc_rank")}>
                     Safety Rank
+                    <span className="scorecard-info-wrap">
+                      <span className="scorecard-info-icon">i</span>
+                      <span className="scorecard-info-tooltip">
+                        Overall safety ranking from Geotab Safety Center, combining
+                        acceleration, braking, cornering, speeding, and seatbelt
+                        behaviors. Scale: 0 (worst) to 100 (best).
+                      </span>
+                    </span>
                     <span className="scorecard-sort-indicator">
                       {indicator("sc_rank")}
                     </span>
                   </th>
                   <th onClick={() => handleSort("sc_crash")}>
                     Crash Prob.
+                    <span className="scorecard-info-wrap">
+                      <span className="scorecard-info-icon">i</span>
+                      <span className="scorecard-info-tooltip">
+                        Predicted likelihood of a crash per kilometer driven, based
+                        on driving behavior patterns analyzed by Geotab Safety Center.
+                      </span>
+                    </span>
                     <span className="scorecard-sort-indicator">
                       {indicator("sc_crash")}
                     </span>
