@@ -1370,6 +1370,18 @@ html, body {
   min-height: 44px;
 }
 
+/* ===== Drive Cached Data Banner ===== */
+#scorecard-root.drive-mode .drive-cached-banner {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0 16px 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
 /* ===== Drive Date Range Toggle ===== */
 #scorecard-root.drive-mode .drive-date-toggle {
   display: flex;

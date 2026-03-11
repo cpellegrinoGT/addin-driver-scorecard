@@ -13,9 +13,10 @@ import {
   aggregateSafetyInsights,
 } from "../../lib/safetyCenter.js";
 import { chunkDateRange } from "../../lib/dateUtils.js";
-import { CHUNK_DAYS, RESULTS_LIMIT } from "../../lib/constants.js";
+import { CHUNK_DAYS, RESULTS_LIMIT, DRIVE_CACHE_KEY } from "../../lib/constants.js";
 import DriveScorecard from "./DriveScorecard.jsx";
 import DriveOfflineBanner from "./DriveOfflineBanner.jsx";
+import DriveCachedBanner from "./DriveCachedBanner.jsx";
 
 export default function DriveView({
   api,
@@ -31,6 +32,7 @@ export default function DriveView({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [dateRange, setDateRange] = useState("7");
+  const [cachedTimestamp, setCachedTimestamp] = useState(null);
   const cancelledRef = useRef(false);
   const dateRangeRef = useRef(dateRange);
 
@@ -168,7 +170,7 @@ export default function DriveView({
         : `${driveDriver.firstName || ""} ${driveDriver.lastName || ""}`.trim();
 
       if (cancelledRef.current) return;
-      setData({
+      const resultData = {
         driverName,
         totalScore: myRow?.totalScore ?? null,
         risk: myRow?.risk ?? "noActivity",
@@ -176,7 +178,20 @@ export default function DriveView({
         trendBuckets,
         fleetRank,
         fleetTotal: scoredRows.length,
-      });
+      };
+      setData(resultData);
+      setCachedTimestamp(null);
+
+      // Cache to localStorage
+      try {
+        localStorage.setItem(DRIVE_CACHE_KEY, JSON.stringify({
+          data: resultData,
+          timestamp: Date.now(),
+          driverId: driveDriver.id,
+        }));
+      } catch (e) {
+        // localStorage full or unavailable — ignore
+      }
     } catch (err) {
       if (cancelledRef.current) return;
       console.error("Drive data load error:", err);
@@ -246,7 +261,25 @@ export default function DriveView({
     loadDriveData(newRange);
   }
 
-  if (!online) {
+  // Load from cache when going offline
+  useEffect(() => {
+    if (!online && !data && driveDriver) {
+      try {
+        const raw = localStorage.getItem(DRIVE_CACHE_KEY);
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (cached.driverId === driveDriver.id && cached.data) {
+            setData(cached.data);
+            setCachedTimestamp(cached.timestamp);
+          }
+        }
+      } catch (e) {
+        // invalid cache — ignore
+      }
+    }
+  }, [online, data, driveDriver]);
+
+  if (!online && !data) {
     return <DriveOfflineBanner onRetry={() => loadDriveData()} />;
   }
 
@@ -283,6 +316,8 @@ export default function DriveView({
   }
 
   return (
+    <>
+    {cachedTimestamp && <DriveCachedBanner timestamp={cachedTimestamp} />}
     <DriveScorecard
       driverName={data.driverName}
       totalScore={data.totalScore}
@@ -297,5 +332,6 @@ export default function DriveView({
       dateRange={dateRange}
       onDateRangeChange={handleDateRangeChange}
     />
+    </>
   );
 }
