@@ -1,6 +1,9 @@
 import { apiCall } from "../hooks/useGeotabApi.js";
 import { ADDIN_DATA_ID } from "./constants.js";
 
+// GroupCompanyId is the well-known root group — grants access to all users
+const COMPANY_GROUP = { id: "GroupCompanyId" };
+
 /**
  * Load settings from AddInData on the server.
  * Returns { id, settings } or { id: null, settings: null }.
@@ -26,12 +29,14 @@ export async function loadSettingsFromServer(api) {
 /**
  * Save settings to AddInData on the server.
  * Uses "Set" if existingId is provided, otherwise "Add".
+ * Sets groups to CompanyGroup so all users (including Drive drivers) can read.
  * Returns the record id.
  */
 export async function saveSettingsToServer(api, settings, existingId) {
   const entity = {
     addInId: ADDIN_DATA_ID,
     data: JSON.stringify(settings),
+    groups: [COMPANY_GROUP],
   };
 
   if (existingId) {

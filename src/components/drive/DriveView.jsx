@@ -200,6 +200,21 @@ export default function DriveView({
           The Driver Scorecard has not been enabled for the Drive app by your
           administrator.
         </p>
+        <p style={{ fontSize: 12, color: "#aaa", marginTop: 8 }}>
+          An admin must enable Drive in the scorecard settings within MyGeotab.
+        </p>
+      </div>
+    );
+  }
+
+  if (!settings.selectedRuleIds || settings.selectedRuleIds.length === 0) {
+    return (
+      <div className="drive-disabled-message">
+        <div className="drive-disabled-icon">&#x1F6C8;</div>
+        <p>No scoring rules have been configured yet.</p>
+        <p style={{ fontSize: 12, color: "#aaa", marginTop: 8 }}>
+          An admin must select rules in the scorecard settings within MyGeotab.
+        </p>
       </div>
     );
   }
