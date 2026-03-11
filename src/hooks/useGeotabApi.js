@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-
 export function apiCall(api, method, params) {
   return new Promise((resolve, reject) => {
     api.call(method, params, resolve, reject);
@@ -26,11 +24,4 @@ export async function apiMultiCallRetry(api, calls, maxRetries = 3) {
     }
   }
   throw lastErr;
-}
-
-export function useApiCall(api) {
-  return useCallback(
-    (method, params) => apiCall(api, method, params),
-    [api]
-  );
 }

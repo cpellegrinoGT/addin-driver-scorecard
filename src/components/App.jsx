@@ -11,7 +11,6 @@ import { apiCall, apiMultiCall } from "../hooks/useGeotabApi.js";
 import { useSettings, DEFAULT_SETTINGS } from "../hooks/useSettings.js";
 import { useDataLoader } from "../hooks/useDataLoader.js";
 import { buildGroupMap, getDescendantIds } from "../lib/groupUtils.js";
-import { getDateRange } from "../lib/dateUtils.js";
 import { UNKNOWN_DRIVER_ID } from "../lib/constants.js";
 import { isDriveContext } from "../lib/driveUtils.js";
 import Toolbar from "./Toolbar.jsx";

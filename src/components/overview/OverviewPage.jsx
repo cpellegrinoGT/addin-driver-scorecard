@@ -82,7 +82,7 @@ export default function OverviewPage({
       <div className="scorecard-charts-row">
         <div className="scorecard-chart-card" style={{ flex: "0 0 280px" }}>
           <h3>Risk Distribution</h3>
-          <RiskDonut distribution={riskDistribution} />
+          <RiskDonut distribution={riskDistribution} entityMode={settings.entityMode} />
         </div>
         <div className="scorecard-top-bottom" style={{ flex: 1 }}>
           <TopBottomTable

@@ -6,7 +6,8 @@ Chart.register(ArcElement, DoughnutController, Tooltip, Legend);
 
 const TIERS = ["low", "mild", "medium", "high"];
 
-export default function RiskDonut({ distribution }) {
+export default function RiskDonut({ distribution, entityMode }) {
+  const centerLabel = entityMode === "assets" ? "Assets" : "Drivers";
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
 
@@ -70,7 +71,7 @@ export default function RiskDonut({ distribution }) {
             ctx.fillText(total, cx, cy - 8);
             ctx.font = "11px Roboto, sans-serif";
             ctx.fillStyle = "#888";
-            ctx.fillText("Drivers", cx, cy + 12);
+            ctx.fillText(centerLabel, cx, cy + 12);
             ctx.restore();
           },
         },
@@ -83,7 +84,7 @@ export default function RiskDonut({ distribution }) {
         chartRef.current = null;
       }
     };
-  }, [distribution]);
+  }, [distribution, centerLabel]);
 
   return (
     <div style={{ maxWidth: 240, margin: "0 auto" }}>

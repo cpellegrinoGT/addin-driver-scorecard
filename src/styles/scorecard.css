@@ -1140,14 +1140,6 @@ html, body {
   line-height: 1.2;
 }
 
-#scorecard-root .sc-crash-value.sc-crash-benchmark {
-  color: #888;
-}
-
-#scorecard-root .sc-crash-value.sc-crash-best {
-  color: #28a745;
-}
-
 #scorecard-root .sc-crash-label {
   font-size: 11px;
   color: #888;

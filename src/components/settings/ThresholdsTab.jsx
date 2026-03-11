@@ -11,6 +11,13 @@ export default function ThresholdsTab({ settings, onUpdate }) {
     });
   }
 
+  const orderingError =
+    thresholds.low <= thresholds.mild
+      ? "Low Risk threshold must be greater than Mild Risk threshold."
+      : thresholds.mild <= thresholds.medium
+        ? "Mild Risk threshold must be greater than Medium Risk threshold."
+        : null;
+
   return (
     <div>
       <p style={{ fontSize: 13, color: "#666", marginTop: 0 }}>
@@ -89,6 +96,12 @@ export default function ThresholdsTab({ settings, onUpdate }) {
           Score &lt; {thresholds.medium}
         </span>
       </div>
+
+      {orderingError && (
+        <p style={{ color: "#dc3545", fontSize: 13, marginTop: 4 }}>
+          {orderingError}
+        </p>
+      )}
     </div>
   );
 }

@@ -22,16 +22,6 @@ export function getDescendantIds(groupId, groupMap) {
   return result;
 }
 
-export function getAncestorIds(groupId, groupMap) {
-  const ancestors = [];
-  let current = groupMap[groupId];
-  while (current?.parent?.id) {
-    ancestors.push(current.parent.id);
-    current = groupMap[current.parent.id];
-  }
-  return ancestors;
-}
-
 export function getSortedGroups(allGroups) {
   const systemIds = new Set([
     "GroupCompanyId",
@@ -58,18 +48,3 @@ export function getDriverGroupNames(driver, groupMap) {
     .filter(Boolean);
 }
 
-export function filterDriversByGroups(drivers, selectedGroupIds, allGroups) {
-  if (!selectedGroupIds || selectedGroupIds.length === 0) return drivers;
-
-  const groupMap = buildGroupMap(allGroups);
-  const allowedGroupIds = new Set();
-  for (const gid of selectedGroupIds) {
-    for (const did of getDescendantIds(gid, groupMap)) {
-      allowedGroupIds.add(did);
-    }
-  }
-
-  return drivers.filter((driver) =>
-    driver.companyGroups?.some((g) => allowedGroupIds.has(g.id))
-  );
-}

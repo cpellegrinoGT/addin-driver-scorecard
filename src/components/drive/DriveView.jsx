@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { apiCall, apiMultiCallRetry } from "../../hooks/useGeotabApi.js";
 import {
   buildDriverIntervals,
@@ -30,10 +30,12 @@ export default function DriveView({
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const cancelledRef = useRef(false);
 
   const loadDriveData = useCallback(async () => {
     if (!api || !driveDriver) return;
 
+    cancelledRef.current = false;
     setLoading(true);
     setError(null);
 
@@ -162,6 +164,7 @@ export default function DriveView({
         ? myRow.driverName
         : `${driveDriver.firstName || ""} ${driveDriver.lastName || ""}`.trim();
 
+      if (cancelledRef.current) return;
       setData({
         driverName,
         totalScore: myRow?.totalScore ?? null,
@@ -172,10 +175,11 @@ export default function DriveView({
         fleetTotal: scoredRows.length,
       });
     } catch (err) {
+      if (cancelledRef.current) return;
       console.error("Drive data load error:", err);
       setError(err.message || "Failed to load data.");
     } finally {
-      setLoading(false);
+      if (!cancelledRef.current) setLoading(false);
     }
   }, [api, driveDriver, settings, allDrivers]);
 
@@ -190,6 +194,7 @@ export default function DriveView({
     if (settings.driveEnabled && online && api && driveDriver) {
       loadDriveData();
     }
+    return () => { cancelledRef.current = true; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!settings.driveEnabled) {
@@ -214,6 +219,19 @@ export default function DriveView({
         <p>No scoring rules have been configured yet.</p>
         <p style={{ fontSize: 12, color: "#aaa", marginTop: 8 }}>
           An admin must select rules in the scorecard settings within MyGeotab.
+        </p>
+      </div>
+    );
+  }
+
+  if (!driveDriver) {
+    return (
+      <div className="drive-disabled-message">
+        <div className="drive-disabled-icon">&#x1F6C8;</div>
+        <p>Unable to identify your driver account.</p>
+        <p style={{ fontSize: 12, color: "#aaa", marginTop: 8 }}>
+          Please contact your administrator to ensure your user account is
+          configured as a driver.
         </p>
       </div>
     );
