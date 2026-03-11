@@ -170,8 +170,8 @@ const App = forwardRef(function App(props, ref) {
         await syncToServer(api);
       }
 
-      // Detect Drive context — in Drive, pageState contains a device property
-      if (isDriveContext(pageState)) {
+      // Detect Drive context — flag set by shell.js based on addin registration name
+      if (isDriveContext()) {
         const filteredDrivers = (drivers || []).filter(
           (d) => d.id !== UNKNOWN_DRIVER_ID
         );

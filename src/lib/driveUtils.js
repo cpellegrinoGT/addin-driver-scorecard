@@ -1,7 +1,8 @@
 /**
  * Detect whether the addin is running inside Geotab Drive.
- * In Drive, pageState includes a `device` property for the current vehicle.
+ * The flag is set by shell.js based on which addin name was called:
+ * driverScorecard (MyGeotab) vs driverScorecardDriveAppLink (Drive).
  */
-export function isDriveContext(pageState) {
-  return !!(pageState?.device);
+export function isDriveContext() {
+  return !!window.__scorecardDriveMode;
 }
