@@ -15,6 +15,8 @@ export async function loadSettingsFromServer(api) {
       search: { addInId: ADDIN_DATA_ID },
     });
 
+    console.log("[AddInData] loadSettingsFromServer results:", results?.length ?? 0, results?.[0]?.groups);
+
     if (results && results.length > 0) {
       const record = results[0];
       const settings = record.data ? JSON.parse(record.data) : null;
@@ -38,18 +40,25 @@ export async function saveSettingsToServer(api, settings, existingId, allGroups)
     ...getSortedGroups(allGroups || []).map((g) => ({ id: g.id })),
   ];
 
+  console.log("[AddInData] saveSettingsToServer — existingId:", existingId, "broadcastGroups:", broadcastGroups.length);
+
+  // Remove the old record first so we can re-create with updated groups.
+  // Set may not update the groups field on an existing AddInData record.
+  if (existingId) {
+    try {
+      await apiCall(api, "Remove", { typeName: "AddInData", entity: { id: existingId } });
+    } catch (err) {
+      console.warn("[AddInData] Remove failed (may not exist):", err);
+    }
+  }
+
   const entity = {
     addInId: ADDIN_DATA_ID,
     data: JSON.stringify(settings),
     groups: broadcastGroups,
   };
 
-  if (existingId) {
-    entity.id = existingId;
-    await apiCall(api, "Set", { typeName: "AddInData", entity });
-    return existingId;
-  }
-
   const newId = await apiCall(api, "Add", { typeName: "AddInData", entity });
+  console.log("[AddInData] Added new record:", newId);
   return newId;
 }
