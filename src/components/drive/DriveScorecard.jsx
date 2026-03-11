@@ -45,6 +45,8 @@ export default function DriveScorecard({
   thresholds,
   onRefresh,
   loading,
+  dateRange,
+  onDateRangeChange,
 }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
@@ -98,6 +100,26 @@ export default function DriveScorecard({
 
   return (
     <div className="drive-scorecard">
+      {/* Date Range Toggle */}
+      {onDateRangeChange && (
+        <div className="drive-date-toggle">
+          <button
+            className={`drive-date-btn ${dateRange === "7" ? "active" : ""}`}
+            onClick={() => onDateRangeChange("7")}
+            disabled={loading}
+          >
+            Last 7 Days
+          </button>
+          <button
+            className={`drive-date-btn ${dateRange === "30" ? "active" : ""}`}
+            onClick={() => onDateRangeChange("30")}
+            disabled={loading}
+          >
+            Last 30 Days
+          </button>
+        </div>
+      )}
+
       {/* Card 1 — Score Hero */}
       <div className="drive-card">
         <div className="drive-card-driver-name">
@@ -172,7 +194,7 @@ export default function DriveScorecard({
       {trendBuckets && trendBuckets.length > 0 && (
         <div className="drive-card">
           <div className="drive-card-title">
-            Score Trend (Last 7 Days)
+            Score Trend (Last {dateRange || "7"} Days)
             <InfoTooltip
               text="Your daily safety score over the selected period, showing how your driving performance changes over time."
               position="below"

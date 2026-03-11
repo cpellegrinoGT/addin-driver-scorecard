@@ -30,9 +30,12 @@ export default function DriveView({
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [dateRange, setDateRange] = useState("7");
   const cancelledRef = useRef(false);
+  const dateRangeRef = useRef(dateRange);
 
-  const loadDriveData = useCallback(async () => {
+  const loadDriveData = useCallback(async (days) => {
+    const daysNum = Number(days || dateRangeRef.current);
     if (!api || !driveDriver) return;
 
     cancelledRef.current = false;
@@ -41,9 +44,9 @@ export default function DriveView({
 
     try {
       const now = new Date();
-      const sevenAgo = new Date(now);
-      sevenAgo.setDate(sevenAgo.getDate() - 7);
-      const fromISO = sevenAgo.toISOString();
+      const start = new Date(now);
+      start.setDate(start.getDate() - daysNum);
+      const fromISO = start.toISOString();
       const toISO = now.toISOString();
 
       // Step 1: Fetch DriverChanges for all drivers (needed for fleet ranking)
@@ -185,7 +188,7 @@ export default function DriveView({
 
   useEffect(() => {
     if (onRegisterRefresh) {
-      onRegisterRefresh(loadDriveData);
+      onRegisterRefresh(() => loadDriveData());
     }
   }, [onRegisterRefresh, loadDriveData]);
 
@@ -237,8 +240,14 @@ export default function DriveView({
     );
   }
 
+  function handleDateRangeChange(newRange) {
+    setDateRange(newRange);
+    dateRangeRef.current = newRange;
+    loadDriveData(newRange);
+  }
+
   if (!online) {
-    return <DriveOfflineBanner onRetry={loadDriveData} />;
+    return <DriveOfflineBanner onRetry={() => loadDriveData()} />;
   }
 
   if (error) {
@@ -247,7 +256,7 @@ export default function DriveView({
         <p style={{ color: "#dc3545" }}>{error}</p>
         <button
           className="scorecard-btn scorecard-btn-primary"
-          onClick={loadDriveData}
+          onClick={() => loadDriveData()}
         >
           Retry
         </button>
@@ -283,8 +292,10 @@ export default function DriveView({
       fleetRank={data.fleetRank}
       fleetTotal={data.fleetTotal}
       thresholds={settings.thresholds}
-      onRefresh={loadDriveData}
+      onRefresh={() => loadDriveData()}
       loading={loading}
+      dateRange={dateRange}
+      onDateRangeChange={handleDateRangeChange}
     />
   );
 }

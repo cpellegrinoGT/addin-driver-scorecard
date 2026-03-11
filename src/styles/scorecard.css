@@ -1363,6 +1363,43 @@ html, body {
   min-height: 44px;
 }
 
+/* ===== Drive Date Range Toggle ===== */
+#scorecard-root.drive-mode .drive-date-toggle {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#scorecard-root.drive-mode .drive-date-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #555;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#scorecard-root.drive-mode .drive-date-btn:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+#scorecard-root.drive-mode .drive-date-btn.active {
+  background: #4a90d9;
+  color: #fff;
+}
+
+#scorecard-root.drive-mode .drive-date-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ===== Drive Risk Legend ===== */
 #scorecard-root.drive-mode .drive-risk-legend {
   display: flex;
