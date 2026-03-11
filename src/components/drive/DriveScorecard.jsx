@@ -9,6 +9,7 @@ import {
   Filler,
 } from "chart.js";
 import { RISK_COLORS, RISK_LABELS } from "../../lib/constants.js";
+import InfoTooltip from "./InfoTooltip.jsx";
 
 Chart.register(
   LineElement,
@@ -99,7 +100,13 @@ export default function DriveScorecard({
     <div className="drive-scorecard">
       {/* Card 1 — Score Hero */}
       <div className="drive-card">
-        <div className="drive-card-driver-name">{driverName}</div>
+        <div className="drive-card-driver-name">
+          {driverName}
+          <InfoTooltip
+            text="Your overall safety score based on weighted rule violations per distance driven. Higher is better."
+            position="below"
+          />
+        </div>
         <div className="drive-card-score" style={{ color: scoreColor }}>
           {totalScore != null ? Math.round(totalScore) : "-"}
         </div>
@@ -111,7 +118,13 @@ export default function DriveScorecard({
       {/* Card 2 — Behavior Ranks */}
       {safetySummary && (
         <div className="drive-card">
-          <div className="drive-card-title">Behavior Ranks</div>
+          <div className="drive-card-title">
+            Behavior Ranks
+            <InfoTooltip
+              text="How you rank across key driving behaviors based on Safety Center data. Higher percentages indicate safer driving."
+              position="below"
+            />
+          </div>
           {BEHAVIOR_RANKS.map((br) => {
             const val = safetySummary[br.key];
             return (
@@ -138,7 +151,13 @@ export default function DriveScorecard({
       {/* Card 3 — Score Trend */}
       {trendBuckets && trendBuckets.length > 0 && (
         <div className="drive-card">
-          <div className="drive-card-title">Score Trend (Last 7 Days)</div>
+          <div className="drive-card-title">
+            Score Trend (Last 7 Days)
+            <InfoTooltip
+              text="Your daily safety score over the selected period, showing how your driving performance changes over time."
+              position="below"
+            />
+          </div>
           <div style={{ height: 100 }}>
             <canvas ref={canvasRef} />
           </div>
@@ -148,7 +167,13 @@ export default function DriveScorecard({
       {/* Card 4 — Fleet Ranking */}
       {fleetRank != null && fleetTotal != null && (
         <div className="drive-card">
-          <div className="drive-card-title">Fleet Ranking</div>
+          <div className="drive-card-title">
+            Fleet Ranking
+            <InfoTooltip
+              text="Where you stand among all scored drivers in your fleet."
+              position="below"
+            />
+          </div>
           <div className="drive-fleet-rank">
             You rank <strong>#{fleetRank}</strong> out of{" "}
             <strong>{fleetTotal}</strong> drivers
@@ -164,7 +189,13 @@ export default function DriveScorecard({
       {/* Card 5 — Crash Probability */}
       {safetySummary && safetySummary.crashProbabilityKm != null && (
         <div className="drive-card">
-          <div className="drive-card-title">Crash Probability</div>
+          <div className="drive-card-title">
+            Crash Probability
+            <InfoTooltip
+              text="Your predicted crash risk based on driving patterns, compared to fleet benchmark and best-in-class drivers."
+              position="above"
+            />
+          </div>
           <div className="drive-crash-grid">
             <div className="drive-crash-stat">
               <div className="drive-crash-value">
