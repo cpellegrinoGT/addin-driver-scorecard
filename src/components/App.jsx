@@ -191,7 +191,7 @@ const App = forwardRef(function App(props, ref) {
 
       // If no server settings existed yet and user is admin, push local settings up
       if (!hadServerSettings && isAdmin) {
-        await syncToServer(api);
+        await syncToServer(api, groups || []);
       }
 
       // Detect Drive context — detected at runtime by shell.js
@@ -290,7 +290,7 @@ const App = forwardRef(function App(props, ref) {
   useEffect(() => {
     if (state._api && !state.isDrive && state.isAdmin && prevSettingsRef.current !== settings) {
       prevSettingsRef.current = settings;
-      syncToServer(state._api);
+      syncToServer(state._api, state.allGroups);
     }
   }, [settings, state._api, state.isDrive, state.isAdmin, syncToServer]);
 
