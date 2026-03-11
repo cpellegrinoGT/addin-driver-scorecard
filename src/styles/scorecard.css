@@ -1368,3 +1368,59 @@ html, body {
   width: 100px;
   font-size: 12px;
 }
+
+/* ===== Drive Info Tooltip (tap-toggle) ===== */
+#scorecard-root.drive-mode .drive-info-wrap {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+#scorecard-root.drive-mode .drive-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #e0e0e0;
+  color: #666;
+  font-size: 12px;
+  font-weight: 700;
+  font-style: italic;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#scorecard-root.drive-mode .drive-info-tooltip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  padding: 12px 14px;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 1500;
+  white-space: normal;
+}
+
+#scorecard-root.drive-mode .drive-info-tooltip-below {
+  top: 100%;
+  margin-top: 8px;
+}
+
+#scorecard-root.drive-mode .drive-info-tooltip-above {
+  bottom: 100%;
+  margin-bottom: 8px;
+}
