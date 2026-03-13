@@ -18,9 +18,9 @@ export default function RuleBreakdownTable({
       </thead>
       <tbody>
         {ruleColumns.map((rc) => {
-          const score = ruleScores[rc.id];
-          const count = eventCounts[rc.id] || 0;
-          const weight = ruleWeights[rc.id] || 0;
+          const score = ruleScores?.[rc.id] ?? null;
+          const count = eventCounts?.[rc.id] || 0;
+          const weight = ruleWeights?.[rc.id] || 0;
           return (
             <tr key={rc.id}>
               <td>

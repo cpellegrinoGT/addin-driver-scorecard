@@ -60,8 +60,8 @@ export default function DriverTable({
         bv = getScSummary(b.driverId)?.crashProbabilityKm ?? -1;
       } else if (sortKey.startsWith("rule_")) {
         const ruleId = sortKey.slice(5);
-        av = a.ruleScores[ruleId] ?? -1;
-        bv = b.ruleScores[ruleId] ?? -1;
+        av = a.ruleScores?.[ruleId] ?? -1;
+        bv = b.ruleScores?.[ruleId] ?? -1;
       } else {
         av = 0;
         bv = 0;

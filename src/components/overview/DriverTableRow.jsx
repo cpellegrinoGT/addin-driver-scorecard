@@ -36,8 +36,8 @@ export default function DriverTableRow({
           : "-"}
       </td>
       {ruleColumns.map((rc) => {
-        const score = row.ruleScores[rc.id];
-        const count = row.eventCounts[rc.id] || 0;
+        const score = row.ruleScores?.[rc.id] ?? null;
+        const count = row.eventCounts?.[rc.id] || 0;
         return (
           <td key={rc.id} style={{ textAlign: "right" }}>
             {score !== null ? (
