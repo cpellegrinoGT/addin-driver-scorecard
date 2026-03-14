@@ -7,10 +7,19 @@ import { ADDIN_DATA_ID } from "./constants.js";
  */
 export async function loadSettingsFromServer(api) {
   try {
-    const results = await apiCall(api, "Get", {
-      typeName: "AddInData",
-      search: { addInId: ADDIN_DATA_ID },
-    });
+    console.log("[AddInData] Attempting Get with search:", { addInId: ADDIN_DATA_ID });
+    let results;
+    try {
+      results = await apiCall(api, "Get", {
+        typeName: "AddInData",
+        search: { addInId: ADDIN_DATA_ID },
+      });
+    } catch (searchErr) {
+      // addInId search may fail on some server versions — fall back to unfiltered Get
+      console.warn("[AddInData] Search by addInId failed, trying unfiltered Get:", searchErr.message);
+      const all = await apiCall(api, "Get", { typeName: "AddInData" });
+      results = (all || []).filter((r) => r.addInId === ADDIN_DATA_ID);
+    }
 
     console.log("[AddInData] Get results:", results?.length ?? 0, "records");
     if (results && results.length > 0) {
