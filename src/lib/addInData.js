@@ -8,24 +8,16 @@ import { ADDIN_DATA_ID } from "./constants.js";
 export async function loadSettingsFromServer(api) {
   try {
     console.log("[AddInData] Attempting Get with search:", { addInId: ADDIN_DATA_ID });
-    let results;
-    try {
-      results = await apiCall(api, "Get", {
-        typeName: "AddInData",
-        search: { addInId: ADDIN_DATA_ID },
-      });
-    } catch (searchErr) {
-      // addInId search may fail on some server versions — fall back to unfiltered Get
-      console.warn("[AddInData] Search by addInId failed, trying unfiltered Get:", searchErr.message);
-      const all = await apiCall(api, "Get", { typeName: "AddInData" });
-      results = (all || []).filter((r) => r.addInId === ADDIN_DATA_ID);
-    }
+    const results = await apiCall(api, "Get", {
+      typeName: "AddInData",
+      search: { addInId: ADDIN_DATA_ID },
+    });
 
     console.log("[AddInData] Get results:", results?.length ?? 0, "records");
     if (results && results.length > 0) {
       const record = results[0];
       console.log("[AddInData] Record id:", record.id, "groups:", record.groups);
-      const settings = record.data ? JSON.parse(record.data) : null;
+      const settings = record.details ?? null;
       return { id: record.id, settings };
     }
   } catch (err) {
@@ -36,8 +28,9 @@ export async function loadSettingsFromServer(api) {
 
 /**
  * Save settings to AddInData on the server.
- * Always Remove + Add to ensure groups are updated (Set does not update groups).
- * Uses GroupCompanyId (org root) so any user on the database can read the record.
+ * Always Remove + Add to ensure a clean record.
+ * Groups omitted so any authenticated user on the database can read it.
+ * Uses `details` (not legacy `data`) for the settings payload.
  * Returns the new record id.
  */
 export async function saveSettingsToServer(api, settings, existingId) {
@@ -51,10 +44,9 @@ export async function saveSettingsToServer(api, settings, existingId) {
 
   const entity = {
     addInId: ADDIN_DATA_ID,
-    data: JSON.stringify(settings),
-    groups: [{ id: "GroupSupervisorSecurityId" }],
+    details: settings,
   };
-  console.log("[AddInData] Adding record with groups:", entity.groups);
+  console.log("[AddInData] Adding record (no groups, using details)");
   const newId = await apiCall(api, "Add", {
     typeName: "AddInData",
     entity,
