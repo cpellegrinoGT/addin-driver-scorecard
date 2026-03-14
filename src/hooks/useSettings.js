@@ -3,7 +3,6 @@ import {
   DEFAULT_THRESHOLDS,
   RULE_PALETTE,
   SETTINGS_STORAGE_KEY,
-  VIEWS_STORAGE_KEY,
 } from "../lib/constants.js";
 import {
   loadSettingsFromServer,
@@ -43,14 +42,8 @@ export function useSettings() {
     const stored = loadFromStorage(SETTINGS_STORAGE_KEY, null);
     if (stored) {
       return {
-        selectedRuleIds: stored.selectedRuleIds || [],
-        ruleWeights: stored.ruleWeights || {},
-        ruleColors: stored.ruleColors || {},
-        thresholds: stored.thresholds || { ...DEFAULT_THRESHOLDS },
-        savedViews: loadFromStorage(VIEWS_STORAGE_KEY, []),
-        entityMode: stored.entityMode || "drivers",
-        showSafety: stored.showSafety !== undefined ? stored.showSafety : true,
-        driveEnabled: stored.driveEnabled || false,
+        ...DEFAULT_SETTINGS,
+        ...stored,
       };
     }
     return { ...DEFAULT_SETTINGS };
@@ -63,42 +56,48 @@ export function useSettings() {
     setSettings((prev) => {
       const next = { ...prev, ...patch };
 
-      // Persist settings (excluding savedViews which has its own key)
-      const { savedViews, ...rest } = next;
-      saveToStorage(SETTINGS_STORAGE_KEY, rest);
-      if (patch.savedViews !== undefined) {
-        saveToStorage(VIEWS_STORAGE_KEY, next.savedViews);
-      }
+      saveToStorage(SETTINGS_STORAGE_KEY, next);
 
       settingsRef.current = next;
       return next;
     });
   }, []);
 
-  const syncFromServer = useCallback(async (api) => {
+  const syncFromServer = useCallback(async (api, { ignoreLocal = false } = {}) => {
     const { id, settings: serverSettings } = await loadSettingsFromServer(api);
     if (id) addInDataIdRef.current = id;
     if (serverSettings) {
       setSettings((prev) => {
+        if (ignoreLocal) {
+          // Non-admin: server is sole source of truth, skip localStorage
+          const next = { ...DEFAULT_SETTINGS, ...serverSettings };
+          settingsRef.current = next;
+          return next;
+        }
+        // Admin: merge server into local state, persist to localStorage
         const merged = { ...prev, ...serverSettings };
-        // Restore savedViews from localStorage — they're not stored in AddInData
-        merged.savedViews = prev.savedViews;
-        const { savedViews, ...rest } = merged;
-        saveToStorage(SETTINGS_STORAGE_KEY, rest);
+        saveToStorage(SETTINGS_STORAGE_KEY, merged);
         settingsRef.current = merged;
         return merged;
       });
       return true;
+    }
+    if (ignoreLocal) {
+      // Non-admin with no server record: use defaults
+      setSettings(() => {
+        const next = { ...DEFAULT_SETTINGS };
+        settingsRef.current = next;
+        return next;
+      });
     }
     return false;
   }, []);
 
   const syncToServer = useCallback(async (api) => {
     try {
-      const { savedViews, ...toSync } = settingsRef.current;
       const newId = await saveSettingsToServer(
         api,
-        toSync,
+        settingsRef.current,
         addInDataIdRef.current
       );
       if (newId) addInDataIdRef.current = newId;

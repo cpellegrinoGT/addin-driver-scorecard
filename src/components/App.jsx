@@ -57,7 +57,7 @@ const initialState = {
   driveOnline: true,
 
   // Admin state
-  isAdmin: true, // default true until determined
+  isAdmin: false, // default false until confirmed
 };
 
 function reducer(state, action) {
@@ -187,11 +187,11 @@ const App = forwardRef(function App(props, ref) {
       });
 
       // Sync settings from server (AddInData)
-      const hadServerSettings = await syncFromServer(api);
-
-      // If no server settings existed yet and user is admin, push local defaults up
-      if (!hadServerSettings && isAdmin) {
-        await syncToServer(api);
+      if (isAdmin) {
+        const hadServerSettings = await syncFromServer(api);
+        if (!hadServerSettings) await syncToServer(api);
+      } else {
+        await syncFromServer(api, { ignoreLocal: true });
       }
 
       // Detect Drive context — detected at runtime by shell.js

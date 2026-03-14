@@ -57,7 +57,7 @@ export default function SettingsPanel({
           ))}
         </div>
 
-        <div className={`scorecard-settings-body ${!isAdmin ? "settings-readonly" : ""}`}>
+        <div className={`scorecard-settings-body ${!isAdmin && activeTab !== "views" ? "settings-readonly" : ""}`}>
           {activeTab === "general" && (
             <GeneralTab
               settings={settings}
@@ -88,7 +88,8 @@ export default function SettingsPanel({
           {activeTab === "views" && (
             <SavedViewsTab
               settings={settings}
-              onUpdate={isAdmin ? onUpdate : () => {}}
+              onUpdate={onUpdate}
+              isAdmin={isAdmin}
             />
           )}
         </div>

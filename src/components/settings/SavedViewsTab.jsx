@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function SavedViewsTab({ settings, onUpdate }) {
+export default function SavedViewsTab({ settings, onUpdate, isAdmin = true }) {
   const [viewName, setViewName] = useState("");
 
   function handleSave() {
@@ -44,26 +44,29 @@ export default function SavedViewsTab({ settings, onUpdate }) {
   return (
     <div>
       <p style={{ fontSize: 13, color: "#666", marginTop: 0 }}>
-        Save your current rule selection, weights, colors, and thresholds as a
-        named view for quick recall.
+        {isAdmin
+          ? "Save your current rule selection, weights, colors, and thresholds as a named view for quick recall."
+          : "Load a saved view to apply its rule selection, weights, colors, and thresholds."}
       </p>
 
-      <div className="scorecard-save-view-form">
-        <input
-          type="text"
-          placeholder="View name"
-          value={viewName}
-          onChange={(e) => setViewName(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSave()}
-        />
-        <button
-          className="scorecard-btn scorecard-btn-primary scorecard-btn-sm"
-          onClick={handleSave}
-          disabled={!viewName.trim()}
-        >
-          Save
-        </button>
-      </div>
+      {isAdmin && (
+        <div className="scorecard-save-view-form">
+          <input
+            type="text"
+            placeholder="View name"
+            value={viewName}
+            onChange={(e) => setViewName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSave()}
+          />
+          <button
+            className="scorecard-btn scorecard-btn-primary scorecard-btn-sm"
+            onClick={handleSave}
+            disabled={!viewName.trim()}
+          >
+            Save
+          </button>
+        </div>
+      )}
 
       {views.length === 0 ? (
         <p style={{ fontSize: 13, color: "#888" }}>No saved views yet.</p>
@@ -80,12 +83,14 @@ export default function SavedViewsTab({ settings, onUpdate }) {
             >
               Load
             </button>
-            <button
-              className="scorecard-btn scorecard-btn-sm scorecard-btn-danger"
-              onClick={() => handleDelete(view.name)}
-            >
-              Delete
-            </button>
+            {isAdmin && (
+              <button
+                className="scorecard-btn scorecard-btn-sm scorecard-btn-danger"
+                onClick={() => handleDelete(view.name)}
+              >
+                Delete
+              </button>
+            )}
           </div>
         ))
       )}
