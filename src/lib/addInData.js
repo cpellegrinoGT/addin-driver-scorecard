@@ -49,13 +49,11 @@ export async function saveSettingsToServer(api, settings, existingId) {
     });
   }
 
-  const groups = [{ id: "GroupCompanyId" }];
   const entity = {
     addInId: ADDIN_DATA_ID,
     data: JSON.stringify(settings),
-    groups,
   };
-  console.log("[AddInData] Adding record with groups:", groups);
+  console.log("[AddInData] Adding record (no groups):");
   const newId = await apiCall(api, "Add", {
     typeName: "AddInData",
     entity,
