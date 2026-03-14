@@ -12,13 +12,15 @@ export async function loadSettingsFromServer(api) {
       search: { addInId: ADDIN_DATA_ID },
     });
 
+    console.log("[AddInData] Get results:", results?.length ?? 0, "records");
     if (results && results.length > 0) {
       const record = results[0];
+      console.log("[AddInData] Record id:", record.id, "groups:", record.groups);
       const settings = record.data ? JSON.parse(record.data) : null;
       return { id: record.id, settings };
     }
   } catch (err) {
-    console.warn("Failed to load AddInData settings:", err);
+    console.warn("[AddInData] Failed to load:", err);
   }
   return { id: null, settings: null };
 }
@@ -39,19 +41,23 @@ const ALL_CLEARANCES = [
 
 export async function saveSettingsToServer(api, settings, existingId) {
   if (existingId) {
+    console.log("[AddInData] Removing old record:", existingId);
     await apiCall(api, "Remove", {
       typeName: "AddInData",
       entity: { id: existingId },
     });
   }
 
+  const entity = {
+    addInId: ADDIN_DATA_ID,
+    data: JSON.stringify(settings),
+    groups: ALL_CLEARANCES,
+  };
+  console.log("[AddInData] Adding record with groups:", ALL_CLEARANCES);
   const newId = await apiCall(api, "Add", {
     typeName: "AddInData",
-    entity: {
-      addInId: ADDIN_DATA_ID,
-      data: JSON.stringify(settings),
-      groups: ALL_CLEARANCES,
-    },
+    entity,
   });
+  console.log("[AddInData] Created record:", newId);
   return newId;
 }
