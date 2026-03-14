@@ -25,23 +25,25 @@ export async function loadSettingsFromServer(api) {
 
 /**
  * Save settings to AddInData on the server.
- * Uses "Set" if existingId is provided, otherwise "Add".
+ * Always Remove + Add to ensure groups are updated (Set does not update groups).
  * Uses GroupCompanyId so any user on the database can read the record.
- * Returns the record id.
+ * Returns the new record id.
  */
 export async function saveSettingsToServer(api, settings, existingId) {
-  const entity = {
-    addInId: ADDIN_DATA_ID,
-    data: JSON.stringify(settings),
-    groups: [{ id: "GroupCompanyId" }],
-  };
-
   if (existingId) {
-    entity.id = existingId;
-    await apiCall(api, "Set", { typeName: "AddInData", entity });
-    return existingId;
+    await apiCall(api, "Remove", {
+      typeName: "AddInData",
+      entity: { id: existingId },
+    });
   }
 
-  const newId = await apiCall(api, "Add", { typeName: "AddInData", entity });
+  const newId = await apiCall(api, "Add", {
+    typeName: "AddInData",
+    entity: {
+      addInId: ADDIN_DATA_ID,
+      data: JSON.stringify(settings),
+      groups: [{ id: "GroupCompanyId" }],
+    },
+  });
   return newId;
 }
