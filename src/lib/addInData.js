@@ -52,8 +52,9 @@ export async function saveSettingsToServer(api, settings, existingId) {
   const entity = {
     addInId: ADDIN_DATA_ID,
     data: JSON.stringify(settings),
+    groups: [{ id: "GroupCompanyId" }],
   };
-  console.log("[AddInData] Adding record (no groups):");
+  console.log("[AddInData] Adding record with groups:", entity.groups);
   const newId = await apiCall(api, "Add", {
     typeName: "AddInData",
     entity,
