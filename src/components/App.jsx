@@ -157,7 +157,6 @@ const App = forwardRef(function App(props, ref) {
       // Determine admin status from security groups
       const ADMIN_GROUP_IDS = [
         "GroupEverythingSecurityId",
-        "GroupSupervisorsSecurityId",
       ];
       const userGroups = currentUser?.securityGroups || [];
       const isAdmin = userGroups.some((g) =>
