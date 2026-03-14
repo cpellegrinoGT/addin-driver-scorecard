@@ -28,17 +28,9 @@ export async function loadSettingsFromServer(api) {
 /**
  * Save settings to AddInData on the server.
  * Always Remove + Add to ensure groups are updated (Set does not update groups).
- * Uses security clearance groups so any user can read the record.
+ * Uses GroupCompanyId (org root) so any user on the database can read the record.
  * Returns the new record id.
  */
-const ALL_CLEARANCES = [
-  { id: "GroupEverythingSecurityId" },
-  { id: "GroupSupervisorSecurityId" },
-  { id: "GroupUserSecurityId" },
-  { id: "GroupViewOnlySecurityId" },
-  { id: "GroupDriveUserSecurityId" },
-];
-
 export async function saveSettingsToServer(api, settings, existingId) {
   if (existingId) {
     console.log("[AddInData] Removing old record:", existingId);
@@ -48,12 +40,13 @@ export async function saveSettingsToServer(api, settings, existingId) {
     });
   }
 
+  const groups = [{ id: "GroupCompanyId" }];
   const entity = {
     addInId: ADDIN_DATA_ID,
     data: JSON.stringify(settings),
-    groups: ALL_CLEARANCES,
+    groups,
   };
-  console.log("[AddInData] Adding record with groups:", ALL_CLEARANCES);
+  console.log("[AddInData] Adding record with groups:", groups);
   const newId = await apiCall(api, "Add", {
     typeName: "AddInData",
     entity,
